@@ -24,7 +24,7 @@ const TravelsStackNavigator = () => {
       <TravelsStack.Screen
         name="Travels"
         component={TravelsScreen}
-        options={{ title: "Mes voyages" }}
+        options={{ title: "Mes visites" }}
       />
     </TravelsStack.Navigator>
   );

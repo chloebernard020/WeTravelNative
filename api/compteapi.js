@@ -1,4 +1,4 @@
-const rootEndpoint = "https://192.168.57.94:7240/api";
+const rootEndpoint = "https://locahost:7240/api";
 
 const fetchComptes = async () => {
   const response = await fetch(`${rootEndpoint}/CompteApi`);

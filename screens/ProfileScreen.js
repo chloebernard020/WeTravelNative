@@ -89,6 +89,7 @@ export default ProfileScreen;
 const styles = StyleSheet.create({
   textLeft: {
     fontSize: 18,
+    fontWeight: "bold",
     marginTop: 20,
     marginBottom: 20,
     marginLeft: 30,

@@ -47,7 +47,7 @@ const RootTabNavigator = () => {
         <Tab.Screen
           name="TravelsStackNavigator"
           component={TravelsStackNavigator}
-          options={{ title: "Mes voyages" }}
+          options={{ title: "Mes visites" }}
         />
         <Tab.Screen
           name="ProfileStackNavigator"

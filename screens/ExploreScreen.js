@@ -7,15 +7,21 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  TextInput,
 } from "react-native";
 
 const ExploreScreen = ({ navigation }) => {
   return (
     <ScrollView>
       <View style={styles.container}>
+        <TextInput
+          style={styles.research}
+          placeholder="Rechercher un lieu par nom, localisation, type de lieu..."
+          imageUrl="https://img.icons8.com/external-dreamstale-lineal-dreamstale/32/null/external-at-mail-dreamstale-lineal-dreamstale.png"
+        />
         <View style={styles.whiteLine} />
         <View style={styles.row}>
-          <Text style={styles.textLeft}>Découvrir</Text>
+          <Text style={styles.textLeft}>Lieux les plus appréciés</Text>
           <TouchableOpacity
             style={[styles.buttonContainer2, styles.signInButton]}
             onPress={() => navigation.navigate("AllPlaces")}
@@ -65,14 +71,49 @@ const ExploreScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         </ScrollView>
-
         <View style={styles.whiteLine} />
-        <Text style={styles.header}>Filtrer votre recherche</Text>
-
-        <View style={styles.whiteSquare}>
-          <Text style={styles.textLeft}>Localisation</Text>
-          <Text style={styles.textLeft}>Type de lieu</Text>
-        </View>
+        <Text style={styles.header}>Découvrir la Suède</Text>
+        <ScrollView horizontal style={styles.whiteSquare}>
+          <View style={styles.scroll}>
+            <Text style={styles.text}>La Boverie, Liège</Text>
+            <Image
+              style={styles.photo}
+              source={require("../assets/boverie.jpg")}
+            />
+            <TouchableOpacity
+              style={[styles.buttonContainer, styles.signInButton]}
+              onPress={() => navigation.navigate("Place")}
+            >
+              <Text style={styles.loginText}>Découvrir</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.scroll}>
+            <Text style={styles.text}>La Tour Eiffel, Paris</Text>
+            <Image
+              style={styles.photo}
+              source={require("../assets/toureiffel.jpeg")}
+            />
+            <TouchableOpacity
+              style={[styles.buttonContainer, styles.signInButton]}
+              onPress={() => navigation.navigate("Place")}
+            >
+              <Text style={styles.loginText}>Découvrir</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.scroll}>
+            <Text style={styles.text}>Basilique Saint-Francois..., Lima</Text>
+            <Image
+              style={styles.photo}
+              source={require("../assets/stfrancois.jpg")}
+            />
+            <TouchableOpacity
+              style={[styles.buttonContainer, styles.signInButton]}
+              onPress={() => navigation.navigate("Place")}
+            >
+              <Text style={styles.loginText}>Découvrir</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </View>
     </ScrollView>
   );
@@ -81,6 +122,14 @@ const ExploreScreen = ({ navigation }) => {
 export default ExploreScreen;
 
 const styles = StyleSheet.create({
+  research: {
+    backgroundColor: "rgba(245,245,245,1)",
+    borderRadius: 10,
+    color: "rgba(100,100,100,1)",
+    marginTop: 20,
+    width: 350,
+    height: 35,
+  },
   scroll: {
     marginRight: 15,
     marginLeft: 15,
@@ -90,6 +139,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 18,
     marginTop: 20,
+    fontWeight: "bold",
     //fontFamily: "Roboto",
     color: "rgba(57, 56, 131, 1)",
   },
@@ -99,6 +149,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginRight: 20,
     marginLeft: 20,
+    fontWeight: "bold",
     //fontFamily: "Roboto",
     color: "rgba(57, 56, 131, 1)",
   },
@@ -128,7 +179,7 @@ const styles = StyleSheet.create({
   },
   whiteSquare: {
     height: 250,
-    width: 350,
+    width: 380,
     backgroundColor: "rgba(245,245,245,1)",
     borderRadius: 15,
     marginBottom: 10,
@@ -138,7 +189,7 @@ const styles = StyleSheet.create({
   whiteLine: {
     height: 2,
     marginTop: 20,
-    width: 350,
+    width: 380,
     backgroundColor: "white",
   },
 
