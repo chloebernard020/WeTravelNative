@@ -50,9 +50,7 @@ const TravelsScreen = ({ navigation }) => {
           <View style={styles.content}>
             <Text style={styles.text}>La Boverie, Liège</Text>
             <Text>Date : 26/02/2023</Text>
-            <Text style={{ flex: 1, flexWrap: "wrap" }}>
-              Appréciation : Vous n'avez rien posté
-            </Text>
+            <Text>Appréciation : Vous n'avez rien posté</Text>
 
             <TouchableOpacity
               style={[styles.buttonContainer, styles.signInButton]}
@@ -66,10 +64,10 @@ const TravelsScreen = ({ navigation }) => {
         <View style={styles.row}>
           <Image
             style={styles.photo}
-            source={require("../assets/toureiffel.jpeg")}
+            source={require("../assets/cntower.jpg")}
           />
           <View style={styles.content}>
-            <Text style={styles.text}>La Tour Eiffel, Paris</Text>
+            <Text style={styles.text}>CN Tower, Toronto</Text>
             <Text>Date : 06/02/2023</Text>
             <Text style={{ flex: 1, flexWrap: "wrap" }}>
               Appréciation : Vous n'avez rien posté
@@ -87,10 +85,10 @@ const TravelsScreen = ({ navigation }) => {
         <View style={styles.row}>
           <Image
             style={styles.photo}
-            source={require("../assets/boverie.jpg")}
+            source={require("../assets/palaisroyal.jpg")}
           />
           <View style={styles.content}>
-            <Text style={styles.text}>La Boverie, Liège</Text>
+            <Text style={styles.text}>Le palais royal, Stockholm</Text>
             <Text>Date : 06/01/2023</Text>
             <Text style={{ flex: 1, flexWrap: "wrap" }}>
               Appréciation : Vous n'avez rien posté

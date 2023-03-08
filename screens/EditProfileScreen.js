@@ -7,7 +7,6 @@ import {
   ScrollView,
   Image,
 } from "react-native";
-import { ButtonDiscover } from "../components/ButtonDiscover";
 
 const EditProfileScreen = ({}) => {
   return <View></View>;

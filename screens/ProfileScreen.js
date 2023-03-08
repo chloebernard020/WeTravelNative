@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: "rgba( 226, 223, 231, 1)",
-
+    height: 900,
     //alignItems: "center",
   },
 

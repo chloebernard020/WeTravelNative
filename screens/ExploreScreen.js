@@ -32,10 +32,10 @@ const ExploreScreen = ({ navigation }) => {
         </View>
         <ScrollView horizontal style={styles.whiteSquare}>
           <View style={styles.scroll}>
-            <Text style={styles.text}>La Boverie, Liège</Text>
+            <Text style={styles.text}>Empire State Building, New York</Text>
             <Image
               style={styles.photo}
-              source={require("../assets/boverie.jpg")}
+              source={require("../assets/empire.jpg")}
             />
             <TouchableOpacity
               style={[styles.buttonContainer, styles.signInButton]}
@@ -58,10 +58,10 @@ const ExploreScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
           <View style={styles.scroll}>
-            <Text style={styles.text}>Basilique Saint-Francois..., Lima</Text>
+            <Text style={styles.text}>CN Tower, Toronto</Text>
             <Image
               style={styles.photo}
-              source={require("../assets/stfrancois.jpg")}
+              source={require("../assets/cntower.jpg")}
             />
             <TouchableOpacity
               style={[styles.buttonContainer, styles.signInButton]}
@@ -75,10 +75,10 @@ const ExploreScreen = ({ navigation }) => {
         <Text style={styles.header}>Découvrir la Suède</Text>
         <ScrollView horizontal style={styles.whiteSquare}>
           <View style={styles.scroll}>
-            <Text style={styles.text}>La Boverie, Liège</Text>
+            <Text style={styles.text}>Le palais royal, Stockholm</Text>
             <Image
               style={styles.photo}
-              source={require("../assets/boverie.jpg")}
+              source={require("../assets/palaisroyal.jpg")}
             />
             <TouchableOpacity
               style={[styles.buttonContainer, styles.signInButton]}
@@ -88,10 +88,10 @@ const ExploreScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
           <View style={styles.scroll}>
-            <Text style={styles.text}>La Tour Eiffel, Paris</Text>
+            <Text style={styles.text}>Øresundsbron, Malmö</Text>
             <Image
               style={styles.photo}
-              source={require("../assets/toureiffel.jpeg")}
+              source={require("../assets/Øresund.jpg")}
             />
             <TouchableOpacity
               style={[styles.buttonContainer, styles.signInButton]}
@@ -101,10 +101,10 @@ const ExploreScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
           <View style={styles.scroll}>
-            <Text style={styles.text}>Basilique Saint-Francois..., Lima</Text>
+            <Text style={styles.text}>Liseberg, Göteborg</Text>
             <Image
               style={styles.photo}
-              source={require("../assets/stfrancois.jpg")}
+              source={require("../assets/liseberg.jpg")}
             />
             <TouchableOpacity
               style={[styles.buttonContainer, styles.signInButton]}
