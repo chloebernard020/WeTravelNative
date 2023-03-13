@@ -1,11 +1,14 @@
-const rootEndpoint = "https://locahost:7240/api";
+const rootEndpoint = "https://enscwetravel.azurewebsites.net/api";
 
 const fetchComptes = async () => {
-  const response = await fetch(`${rootEndpoint}/CompteApi`);
-  const comptes = await response.json();
-  return new Promise((resolve) => {
-    resolve(comptes);
-  });
+  try {
+    const response = await fetch(`${rootEndpoint}/CompteApi`);
+    const comptes = await response.json();
+    return comptes;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Impossible de charger les comptes.");
+  }
 };
 
 /*const fetchCompte = async (idCompte) => {

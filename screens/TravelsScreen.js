@@ -1,4 +1,4 @@
-import React from "react";
+import { React, useState } from "react";
 import {
   Text,
   View,
@@ -9,8 +9,19 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
+import { fetchVisitesParCompte } from "../api/visiteapi";
 
-const TravelsScreen = ({ navigation }) => {
+const TravelsScreen = ({ navigation, idcompte }) => {
+  const [visits, setVisits] = useState([]);
+
+  const loadVisites = async () => {
+    try {
+      const displayedVisits = await fetchVisitesParCompte(idcompte);
+      setVisits(displayedVisits);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -21,87 +32,25 @@ const TravelsScreen = ({ navigation }) => {
 
         <Text style={styles.header}>Mes visites</Text>
         <View style={styles.whiteLine} />
-        <View style={styles.row}>
-          <Image
-            style={styles.photo}
-            source={require("../assets/toureiffel.jpeg")}
-          />
-          <View style={styles.content}>
-            <Text style={styles.text}>La Tour Eiffel, Paris</Text>
-            <Text>Date : 06/03/2023</Text>
-            <Text style={{ flex: 1, flexWrap: "wrap" }}>
-              Appréciation : Vous n'avez rien posté
-            </Text>
+        {visits.map((visit, index) => (
+          <View key={index} style={styles.row}>
+            {/*<Image style={styles.photo} source={{ uri: visit.photo }} />*/}
+            <View style={styles.content}>
+              <Text style={styles.text}>{visit.nom}</Text>
+              <Text style={styles.date}>Date : {visit.date}</Text>
+              {/*<Text style={{ flex: 1, flexWrap: "wrap" }}>
+                Appréciation : {visit.comment}
+        </Text>*/}
 
-            <TouchableOpacity
-              style={[styles.buttonContainer, styles.signInButton]}
-              //onPress={signIn}
-            >
-              <Text style={styles.loginText}>En savoir plus</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.buttonContainer, styles.signInButton]}
+                onPress={() => navigation.navigate("Visit")}
+              >
+                <Text style={styles.loginText}>En savoir plus</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-
-        <View style={styles.row}>
-          <Image
-            style={styles.photo}
-            source={require("../assets/boverie.jpg")}
-          />
-          <View style={styles.content}>
-            <Text style={styles.text}>La Boverie, Liège</Text>
-            <Text>Date : 26/02/2023</Text>
-            <Text>Appréciation : Vous n'avez rien posté</Text>
-
-            <TouchableOpacity
-              style={[styles.buttonContainer, styles.signInButton]}
-              //onPress={signIn}
-            >
-              <Text style={styles.loginText}>En savoir plus</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View style={styles.row}>
-          <Image
-            style={styles.photo}
-            source={require("../assets/cntower.jpg")}
-          />
-          <View style={styles.content}>
-            <Text style={styles.text}>CN Tower, Toronto</Text>
-            <Text>Date : 06/02/2023</Text>
-            <Text style={{ flex: 1, flexWrap: "wrap" }}>
-              Appréciation : Vous n'avez rien posté
-            </Text>
-
-            <TouchableOpacity
-              style={[styles.buttonContainer, styles.signInButton]}
-              //onPress={signIn}
-            >
-              <Text style={styles.loginText}>En savoir plus</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View style={styles.row}>
-          <Image
-            style={styles.photo}
-            source={require("../assets/palaisroyal.jpg")}
-          />
-          <View style={styles.content}>
-            <Text style={styles.text}>Le palais royal, Stockholm</Text>
-            <Text>Date : 06/01/2023</Text>
-            <Text style={{ flex: 1, flexWrap: "wrap" }}>
-              Appréciation : Vous n'avez rien posté
-            </Text>
-
-            <TouchableOpacity
-              style={[styles.buttonContainer, styles.signInButton]}
-              //onPress={signIn}
-            >
-              <Text style={styles.loginText}>En savoir plus</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        ))}
       </View>
     </ScrollView>
   );
@@ -112,7 +61,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    //justifyContent: "",
     marginTop: 10,
     backgroundColor: "rgba(245,245,245,1)",
     width: 380,
@@ -161,14 +110,22 @@ const styles = StyleSheet.create({
     //fontFamily: "ArialMT",
     color: "rgba(69, 82, 152, 1)",
   },
+
+  date: {
+    fontSize: 14,
+    alignSelf: "center",
+    marginBottom: 5,
+    marginTop: 5,
+    //fontFamily: "ArialMT",
+    color: "rgba(69, 82, 152, 1)",
+  },
   container: {
     alignItems: "center",
     backgroundColor: "rgba( 226, 223, 231, 1)",
   },
 
   content: {
-    //alignItems: "center",
-    marginLeft: 5,
+    marginLeft: 10,
   },
 
   photo: {

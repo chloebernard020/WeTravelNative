@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -6,53 +6,62 @@ import {
   StyleSheet,
   ScrollView,
   Image,
-  TouchableOpacity,
 } from "react-native";
-import { fetchLieu } from "../api/lieuxapi";
 
-const PlaceScreen = ({ lieu }) => {
-  const [place, setPlace] = useState([]);
+import { fetchVisitesParCompte } from "../api/visiteapi";
+
+const VisitScreen = ({ route }) => {
+  const { id } = route.params;
+  const [visites, setVisites] = useState([]); // initialisation du state pour les visites
 
   useEffect(() => {
-    const getPlaceDetails = async () => {
-      const placeDetails = await fetchLieu(lieu.id);
-      setPlace(placeDetails);
+    const loadVisites = async () => {
+      const visitesData = await fetchVisitesParCompte(id); // appel à votre fonction d'appel API
+      setVisites(visitesData); // mise à jour du state avec les données récupérées depuis l'API
     };
-    getPlaceDetails();
+    loadVisites();
   }, []);
-
-  const infos = place[0];
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <Text style={styles.header}>{infos.nom ? infos.nom : ""}</Text>
-        <Text style={styles.subheader}>
-          {infos.villeId ? infos.villeId : ""}
-        </Text>
-        <Image style={styles.photo} source={{ uri: infos.photo }} />
-        <View style={styles.whiteLine} />
-        <Text style={styles.headdescription}>Description</Text>
-
-        <Text style={styles.description}>{infos.description}</Text>
-        <View style={styles.whiteLine} />
-        <Text style={styles.headdescription}>Appréciations</Text>
-
-        <Text style={styles.appreciation}>Compte : test</Text>
-        <Text style={styles.appreciation}>Date : 04/02/2023</Text>
-        <Text style={styles.appreciation}>Commentaire : J'ai adoré !</Text>
-        <View style={styles.whiteLine} />
-        <Text style={styles.headdescription}>Point culture</Text>
-        <Text style={styles.appreciation}>Ici des anecdotes </Text>
-        <View style={styles.whiteLine} />
-        <TouchableOpacity style={[styles.buttonContainer, styles.signInButton]}>
-          <Text style={styles.loginText}>J'ai visité ce lieu</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+    <View style={styles.container}>
+      {visites.map((visite) => (
+        <View key={visite.id}>
+          <Text style={styles.header}>{visite.nom}</Text>
+          <Text style={styles.subheader}>
+            {visite.ville}, {visite.pays}
+          </Text>
+          {/*<Image style={styles.photo} source={{ uri: visite.photo }} />*/}
+          <View style={styles.whiteLine} />
+          <Text style={styles.headdescription}>Description</Text>
+          <Text style={styles.description}>{visite.description}</Text>
+          <View style={styles.whiteLine} />
+          <Text style={styles.headdescription}>Mon appréciation</Text>
+          {visite.appreciations.length > 0 && (
+            <View>
+              <Text style={styles.appreciation}>
+                Date : {visite.appreciations[0].date}
+              </Text>
+              <Text style={styles.appreciation}>
+                Commentaire : {visite.appreciations[0].commentaire}
+              </Text>
+            </View>
+          )}
+          <View style={styles.whiteLine} />
+          <Text style={styles.headdescription}>Mes photos</Text>
+          {visite.photos.map((photo) => (
+            <Image
+              key={photo.id}
+              style={styles.photo}
+              source={{ uri: photo.url }}
+            />
+          ))}
+          <View style={styles.whiteLine} />
+        </View>
+      ))}
+    </View>
   );
 };
 
-export default PlaceScreen;
+export default VisitScreen;
 
 const styles = StyleSheet.create({
   scroll: {

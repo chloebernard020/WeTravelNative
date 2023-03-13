@@ -1,18 +1,29 @@
 import React from "react";
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 
-const PlacesItem = ({ lieu }) => {
+const PlacesItem = ({ lieu, navigation }) => {
   return (
-    <View style={styles.mainContainer}>
-      <View style={styles.contentContainer}>
-        <View style={styles.headerContainer}>
-          <Text style={styles.titleText}>{lieu.name}</Text>
+    <View>
+      <View style={styles.mainContainer}>
+        <View style={styles.contentContainer}>
+          <View style={styles.headerContainer}>
+            <Text style={styles.titleText}>{lieu.nom}</Text>
+          </View>
+          <View style={styles.descriptionContainer}>
+            <Text style={styles.descriptionText} numberOfLines={4}>
+              {lieu.description}
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={[styles.buttonContainer, styles.signInButton]}
+            onPress={() => navigation.navigate(PlaceScreen(lieu))}
+          >
+            <Text style={styles.loginText}>Découvrir</Text>
+          </TouchableOpacity>
         </View>
-        <View style={styles.descriptionContainer}>
-          <Text style={styles.descriptionText}>{lieu.description}</Text>
-        </View>
+        <Image style={styles.image} source={{ uri: lieu.photo }} />
       </View>
-      {/*<Image style={styles.image} source={{ uri: lieu.imageUrl }} />*/}
+      <View style={styles.whiteLine} />
     </View>
   );
 };
@@ -21,16 +32,16 @@ export default PlacesItem;
 
 const styles = StyleSheet.create({
   mainContainer: {
-    height: 190,
+    height: 230,
     flexDirection: "row",
     margin: 10,
   },
   image: {
-    width: 120,
+    width: 150,
     height: 150,
     margin: 5,
-    borderRadius: 30,
-    backgroundColor: "lightgray",
+    borderRadius: 20,
+    backgroundColor: "rgba(245,245,245,1)",
   },
   contentContainer: {
     flex: 1,
@@ -45,19 +56,15 @@ const styles = StyleSheet.create({
     fontSize: 20,
     flex: 1,
     flexWrap: "wrap",
+    color: "rgba(57, 56, 131, 1)",
     paddingRight: 5,
   },
-  anneeText: {
-    fontWeight: "bold",
-    fontSize: 26,
-    color: "#666666",
-  },
+
   descriptionContainer: {
     flex: 7,
   },
   descriptionText: {
-    fontStyle: "italic",
-    color: "#666666",
+    color: "rgba(69, 82, 152, 1)",
   },
   respoContainer: {
     flex: 1,
@@ -65,5 +72,20 @@ const styles = StyleSheet.create({
   respoText: {
     textAlign: "right",
     fontSize: 14,
+  },
+
+  buttonContainer: {
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+    width: 100,
+    borderRadius: 30,
+  },
+  signInButton: {
+    backgroundColor: "rgba(186,104,163,1)",
+  },
+  loginText: {
+    color: "white",
   },
 });
