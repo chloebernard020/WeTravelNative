@@ -11,8 +11,13 @@ export const fetchLesPays = async () => {
   }
 };
 
-export const fetchPays = async (idPays) => {
-  const response = await fetch(`${rootEndpoint}/PaysApi/${idPays}`);
-  const pays = await response.json();
-  return pays[0];
+export const fetchPays = async (id) => {
+  try {
+    const response = await fetch(`${rootEndpoint}/PaysApi/${id}`);
+    const pays = await response.json();
+    return pays;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Impossible de charger le pays.");
+  }
 };

@@ -15,11 +15,13 @@ const ProfileStackNavigator = () => {
       initialRouteName="Profile"
       screenOptions={({ route }) => ({
         headerStyle: {
-          backgroundColor: "rgba(169,147,179,1)",
+          backgroundColor: "rgba(161,158,204,1)",
         },
+
         headerTintColor: "#fff",
         headerTitleStyle: {
           //fontWeight: "bold",
+          color: "white",
         },
       })}
     >

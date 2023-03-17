@@ -11,25 +11,31 @@ import { useNavigation } from "@react-navigation/native";
 import { Input } from "../components/Input";
 import authenticateUser from "../api/compteapi";
 
-export const AuthFormScreen = ({ navigation, onLoginSuccessful }) => {
+export const AuthFormScreen = ({ onLoginSuccessful }) => {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
 
   const signIn = () => {
-    const user = authenticateUser(login, password);
-    let msg = user !== null ? "Connexion réussie" : "Erreur de connexion";
-    msg += ` avec les identifiants : ${login + "/" + password}`;
-    if (user !== null) onLoginSuccessful(user);
-    else Alert.alert("Action sélectionnée", msg);
+    let user = authenticateUser(login, password);
+    if (user == null) {
+      Alert.alert(
+        "Erreur de connexion",
+        "Le nom d'utilisateur ou le mot de passe est incorrect."
+      );
+    } else {
+      onLoginSuccessful(user);
+      Alert.alert(
+        "Connexion réussie",
+        `Vous êtes maintenant connecté en tant que ${user.nom}.`
+      );
+    }
   };
 
   const resetPassword = () => {
     Alert.alert("Action sélectionnée", "Mise à jour du mot de passe");
   };
-  const navigation2 = useNavigation();
+  const navigation = useNavigation();
   const signUp = () => {
-    navigation2.navigate("ExploreStackNavigator", { screen: "ExploreScreen" });
-
     navigation.navigate("RegForm");
   };
   return (
@@ -75,7 +81,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba( 226, 223, 231, 1)",
+    backgroundColor: "rgba( 224, 222, 238, 1)",
   },
   formImage: {
     width: 100,
@@ -91,7 +97,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
   signInButton: {
-    backgroundColor: "rgba(186,104,163,1)",
+    backgroundColor: "rgba(120,116,172,1)",
   },
   loginText: {
     color: "white",
@@ -115,9 +121,10 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   register: {
-    fontSize: 16,
+    fontSize: 20,
     //fontFamily: "ArialRoundedMTBold",
     color: "rgba(186, 104, 163, 1)",
+    fontWeight: "bold",
     marginBottom: 4,
   },
 });

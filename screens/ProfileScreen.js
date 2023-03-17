@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     color: "rgba(69, 82, 152, 1)",
   },
   container: {
-    backgroundColor: "rgba( 226, 223, 231, 1)",
+    backgroundColor: "rgba( 239, 239, 250, 1)",
     height: 900,
     //alignItems: "center",
   },
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   },
 
   editButton: {
-    backgroundColor: "rgba(186,104,163,1)",
+    backgroundColor: "rgba(120,116,172,1)",
   },
 
   preferencesContainer: {

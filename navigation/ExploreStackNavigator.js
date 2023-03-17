@@ -12,18 +12,22 @@ const ExploreStackNavigator = () => {
       initialRouteName="Explore"
       screenOptions={({ route }) => ({
         headerStyle: {
-          backgroundColor: "rgba(169,147,179,1)",
+          backgroundColor: "rgba(161,158,204,1)",
         },
-        headerTintColor: "#fff",
+
+        //headerTintColor: "rgba(161,158,204,1)",
         headerTitleStyle: {
-          //fontWeight: "bold",
+          fontWeight: "bold",
+          color: "white",
         },
       })}
     >
       <ExploreStack.Screen
         name="Explore"
         component={ExploreScreen}
-        options={{ title: "Explorer" }}
+        options={{
+          headerShown: false,
+        }}
       />
 
       <ExploreStack.Screen

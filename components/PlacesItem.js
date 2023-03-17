@@ -1,27 +1,27 @@
 import React from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 
-const PlacesItem = ({ lieu, navigation }) => {
+const PlacesItem = ({ place, navigation }) => {
   return (
     <View>
       <View style={styles.mainContainer}>
         <View style={styles.contentContainer}>
           <View style={styles.headerContainer}>
-            <Text style={styles.titleText}>{lieu.nom}</Text>
+            <Text style={styles.titleText}>{place.nom}</Text>
           </View>
           <View style={styles.descriptionContainer}>
             <Text style={styles.descriptionText} numberOfLines={4}>
-              {lieu.description}
+              {place.description}
             </Text>
           </View>
           <TouchableOpacity
             style={[styles.buttonContainer, styles.signInButton]}
-            onPress={() => navigation.navigate(PlaceScreen(lieu))}
+            onPress={() => navigation.navigate("Place", { place })}
           >
             <Text style={styles.loginText}>Découvrir</Text>
           </TouchableOpacity>
         </View>
-        <Image style={styles.image} source={{ uri: lieu.photo }} />
+        <Image style={styles.image} source={{ uri: place.photo }} />
       </View>
       <View style={styles.whiteLine} />
     </View>

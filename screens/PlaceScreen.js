@@ -7,46 +7,122 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  Animated,
 } from "react-native";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import { fetchLieu } from "../api/lieuxapi";
-
-const PlaceScreen = ({ lieu }) => {
-  const [place, setPlace] = useState([]);
+import { fetchVille } from "../api/villeapi";
+import { fetchPays } from "../api/paysapi";
+import { fetchCulturesParLieu } from "../api/cultureapi";
+import { fetchAppreciationsParLieu } from "../api/appreciationapi";
+const PlaceScreen = ({ route, navigation }) => {
+  const { place } = route.params;
+  const [lieu, setLieu] = useState([]);
 
   useEffect(() => {
     const getPlaceDetails = async () => {
-      const placeDetails = await fetchLieu(lieu.id);
-      setPlace(placeDetails);
+      const placeDetails = await fetchLieu(place.id);
+      setLieu(placeDetails);
     };
     getPlaceDetails();
   }, []);
 
-  const infos = place[0];
+  const [ville, setVille] = useState([]);
+
+  useEffect(() => {
+    const getPlaceDetails = async () => {
+      const villeDetails = await fetchVille(place.villeId);
+      setVille(villeDetails);
+    };
+    getPlaceDetails();
+  }, []);
+
+  const [pays, setPays] = useState([]);
+  useEffect(() => {
+    const getPlaceDetails = async () => {
+      const paysDetails = await fetchPays(ville.paysId);
+      setPays(paysDetails);
+    };
+    getPlaceDetails();
+  }, []);
+
+  const [cultures, setCultures] = useState([]);
+  useEffect(() => {
+    const getCulturesDetails = async () => {
+      const culturesDetails = await fetchCulturesParLieu(place.id);
+      setCultures(culturesDetails);
+    };
+    getCulturesDetails();
+  }, []);
+
+  const [appreciations, setAppreciations] = useState([]);
+  useEffect(() => {
+    const getAppreciationsDetails = async () => {
+      const appreciationsDetails = await fetchAppreciationsParLieu(place.id);
+      setAppreciations(appreciationsDetails);
+    };
+    getAppreciationsDetails();
+  }, []);
+
+  const [heartIcon, setHeartIcon] = useState("heart-outline");
+  const [favorite, setFavorite] = useState();
+
+  const handlePress = () => {
+    setFavorite(!favorite);
+    if (!favorite) {
+      setHeartIcon("heart");
+      onPress();
+    } else {
+      setHeartIcon("heart-outline");
+    }
+  };
+
   return (
     <ScrollView>
       <View style={styles.container}>
-        <Text style={styles.header}>{infos.nom ? infos.nom : ""}</Text>
-        <Text style={styles.subheader}>
-          {infos.villeId ? infos.villeId : ""}
-        </Text>
-        <Image style={styles.photo} source={{ uri: infos.photo }} />
-        <View style={styles.whiteLine} />
-        <Text style={styles.headdescription}>Description</Text>
+        <Image style={styles.photo} source={{ uri: lieu.photo }} />
+        <View style={styles.informations}>
+          <Text style={styles.header}>{lieu.nom ? lieu.nom : ""}</Text>
+          <Text style={styles.subheader}>
+            {ville.nom ? ville.nom : ""}, {pays.nom ? pays.nom : ""}
+          </Text>
+          <TouchableOpacity
+            style={[styles.buttonContainer, styles.signInButton]}
+          >
+            <Text style={styles.loginText}>J'ai visité ce lieu</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handlePress}>
+            <Ionicons name={heartIcon} size={24} style={styles.icon} />
+          </TouchableOpacity>
+          <View style={styles.whiteLine} />
+          <Text style={styles.headdescription}>Description</Text>
 
-        <Text style={styles.description}>{infos.description}</Text>
-        <View style={styles.whiteLine} />
-        <Text style={styles.headdescription}>Appréciations</Text>
+          <Text style={styles.description}>{lieu.description}</Text>
+          <View style={styles.whiteLine} />
+          <Text style={styles.headdescription}>Point culture</Text>
+          {cultures.map((culture) => (
+            <View>
+              <Text style={styles.title}>{culture.nom}</Text>
 
-        <Text style={styles.appreciation}>Compte : test</Text>
-        <Text style={styles.appreciation}>Date : 04/02/2023</Text>
-        <Text style={styles.appreciation}>Commentaire : J'ai adoré !</Text>
-        <View style={styles.whiteLine} />
-        <Text style={styles.headdescription}>Point culture</Text>
-        <Text style={styles.appreciation}>Ici des anecdotes </Text>
-        <View style={styles.whiteLine} />
-        <TouchableOpacity style={[styles.buttonContainer, styles.signInButton]}>
-          <Text style={styles.loginText}>J'ai visité ce lieu</Text>
-        </TouchableOpacity>
+              <Text style={styles.description}>{culture.description}</Text>
+            </View>
+          ))}
+
+          <View style={styles.whiteLine} />
+          <Text style={styles.headdescription}>Appréciations</Text>
+
+          <ScrollView horizontal>
+            {appreciations.map((appreciation) => (
+              <View style={styles.whiteSquare}>
+                <View style={styles.scroll}>
+                  <Text style={styles.text}>Nom du compte</Text>
+                  <Text style={styles.text}>{appreciation.date}</Text>
+                  <Text style={styles.text}>{appreciation.commentaire}</Text>
+                </View>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
       </View>
     </ScrollView>
   );
@@ -59,6 +135,17 @@ const styles = StyleSheet.create({
     marginRight: 30,
     alignItems: "center",
     justifyContent: "center",
+  },
+
+  title: {
+    marginBottom: 10,
+    marginTop: 25,
+    color: "rgba(57, 56, 131, 1)",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  informations: {
+    marginLeft: 10,
   },
   header: {
     fontSize: 24,
@@ -78,7 +165,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginLeft: 15,
     marginRight: 15,
-    marginBottom: 15,
+    marginVetical: 15,
     //fontFamily: "ArialMT",
     color: "rgba(69, 82, 152, 1)",
   },
@@ -89,43 +176,53 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     //fontFamily: "ArialMT",
     color: "rgba(69, 82, 152, 1)",
-    alignItems: "center",
   },
 
   headdescription: {
-    fontSize: 18,
+    fontSize: 20,
+    fontWeight: "bold",
     marginTop: 5,
     //fontFamily: "ArialMT",
     color: "rgba(57, 56, 131, 1)",
   },
 
   container: {
-    alignItems: "center",
-    backgroundColor: "rgba( 226, 223, 231, 1)",
-    height: 800,
+    //alignItems: "center",
+
+    backgroundColor: "rgba( 246, 246, 250, 1)",
   },
 
   photo: {
-    width: 250,
-    height: 170,
-    marginBottom: 20,
-    marginTop: 10,
-    borderRadius: 10,
+    width: 420,
+    height: 250,
+    marginBottom: 5,
+
+    shadowColor: "rgba(167,166,169,1)",
+    shadowOffset: { width: 2, height: 2 },
+    shadowRadius: 10,
+    elevation: 10,
   },
   whiteSquare: {
-    height: 300,
-    width: 350,
-    backgroundColor: "rgba(245,245,245,1)",
+    height: 120,
+    width: 300,
+    backgroundColor: "white",
     borderRadius: 20,
-    marginBottom: 20,
+    marginBottom: 10,
+    shadowColor: "rgba(167,166,169,1)",
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.7,
+    shadowRadius: 10,
+    elevation: 10,
+
+    marginHorizontal: 15,
     marginTop: 20,
   },
   whiteLine: {
     height: 2,
-    marginTop: 5,
-    marginBottom: 5,
+    marginTop: 10,
+    marginBottom: 10,
     width: 380,
-    backgroundColor: "white",
+    backgroundColor: "rgba( 226, 223, 231, 1)",
   },
   buttonContainer: {
     height: 40,
@@ -144,9 +241,20 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
   signInButton: {
-    backgroundColor: "rgba(186,104,163,1)",
+    backgroundColor: "rgba(120,116,172,1)",
   },
   loginText: {
     color: "white",
+  },
+  text: {
+    color: "rgba(69, 82, 152, 1)",
+    marginVertical: 5,
+    marginLeft: 10,
+  },
+
+  icon: {
+    color: "red",
+    marginVertical: 5,
+    marginLeft: 10,
   },
 });

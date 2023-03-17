@@ -10,15 +10,19 @@ import { AuthFormScreen } from "./screens/AuthFormScreen";
 
 export default function App() {
   const [loggedUser, setLoggedUser] = useState();
-
   const authForm = !loggedUser ? (
-    <NavigationContainer>
-      <AuthFormScreen onLoginSuccessful={(user) => setLoggedUser(user)} />
-    </NavigationContainer>
+    <AuthentificationStackNavigator
+      onLoginSuccessful={(user) => setLoggedUser(user)}
+    />
   ) : null;
   const roottab = loggedUser ? <RootTabNavigator /> : null;
 
-  return <RootTabNavigator />;
+  return (
+    <View style={styles.container}>
+      {authForm}
+      {roottab}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

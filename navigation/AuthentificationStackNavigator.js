@@ -1,4 +1,4 @@
-import React from "react";
+import { React, useState } from "react";
 import { StyleSheet } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import PlaceScreen from "../screens/PlaceScreen";
@@ -8,14 +8,21 @@ import { NavigationContainer } from "@react-navigation/native";
 
 const AuthentificationStack = createNativeStackNavigator();
 
-const AuthentificationStackNavigator = () => {
+const AuthentificationStackNavigator = ({ onLoginSuccessful }) => {
+  const f = (a) => {
+    onLoginSuccessful(a);
+  };
+
+  const AuthFormComponent = (props) => (
+    <AuthFormScreen {...props} onLoginSuccessful={f} />
+  );
   return (
     <NavigationContainer>
       <AuthentificationStack.Navigator
         initialRouteName={AuthFormScreen}
         screenOptions={({ route }) => ({
           headerStyle: {
-            backgroundColor: "rgba(169,147,179,1)",
+            backgroundColor: "rgba(161,158,204,1)",
           },
           headerTintColor: "#fff",
           headerTitleStyle: {
@@ -25,8 +32,8 @@ const AuthentificationStackNavigator = () => {
       >
         <AuthentificationStack.Screen
           name="AuthForm"
-          component={AuthFormScreen}
           options={{ title: "Connexion" }}
+          component={AuthFormComponent}
         />
 
         <AuthentificationStack.Screen

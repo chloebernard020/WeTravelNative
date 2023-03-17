@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba( 226, 223, 231, 1)",
+    backgroundColor: "rgba( 224, 222, 238, 1)",
   },
   formImage: {
     width: 100,
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
   signInButton: {
-    backgroundColor: "rgba(186,104,163,1)",
+    backgroundColor: "rgba(120,116,172,1)",
   },
   loginText: {
     color: "white",
@@ -108,9 +108,10 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   register: {
-    fontSize: 16,
+    fontSize: 20,
     //fontFamily: "ArialRoundedMTBold",
     color: "rgba(186, 104, 163, 1)",
+    fontWeight: "bold",
     marginBottom: 4,
   },
 });

@@ -1,6 +1,6 @@
 const rootEndpoint = "https://enscwetravel.azurewebsites.net/api";
 
-const fetchComptes = async () => {
+export const fetchComptes = async () => {
   try {
     const response = await fetch(`${rootEndpoint}/CompteApi`);
     const comptes = await response.json();
@@ -25,11 +25,10 @@ const fetchComptes = async () => {
   }
 };*/
 
-export default authenticateUser = async (mail, motDePasse) => {
+export const authenticateUser = async (mail, motdepasse) => {
   const comptes = await fetchComptes();
-  return (
-    // Search for the first user matching login and password
-
-    comptes.find((u) => u.mail === mail && u.motDePasse === motDePasse) || null
+  const user = comptes.find(
+    (u) => u.mail === mail && u.motDePasse === motdepasse
   );
+  return user ? user : null;
 };

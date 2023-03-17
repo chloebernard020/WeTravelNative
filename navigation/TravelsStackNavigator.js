@@ -14,11 +14,13 @@ const TravelsStackNavigator = () => {
       initialRouteName="Travels"
       screenOptions={({ route }) => ({
         headerStyle: {
-          backgroundColor: "rgba(169,147,179,1)",
+          backgroundColor: "rgba(161,158,204,1)",
         },
+
         headerTintColor: "#fff",
         headerTitleStyle: {
-          //fontWeight: "bold",
+          fontWeight: "bold",
+          color: "white",
         },
       })}
     >

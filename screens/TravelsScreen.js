@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import {
   Text,
   View,
@@ -14,43 +14,64 @@ import { fetchVisitesParCompte } from "../api/visiteapi";
 const TravelsScreen = ({ navigation, idcompte }) => {
   const [visits, setVisits] = useState([]);
 
-  const loadVisites = async () => {
-    try {
-      const displayedVisits = await fetchVisitesParCompte(idcompte);
-      setVisits(displayedVisits);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  useEffect(() => {
+    const loadVisites = async () => {
+      try {
+        const displayedVisits = await fetchVisitesParCompte(idcompte);
+        setVisits(displayedVisits);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    loadVisites();
+  }, []);
+
   return (
     <ScrollView>
       <View style={styles.container}>
-        <TextInput
-          style={styles.research}
-          placeholder="Rechercher une visite par nom, date..."
-        />
+        <View style={styles.containerResearch}>
+          <TextInput
+            style={styles.research}
+            placeholder="La tour eiffel ..."
+            imageUrl="https://img.icons8.com/external-dreamstale-lineal-dreamstale/32/null/external-at-mail-dreamstale-lineal-dreamstale.png"
+          />
+          <View style={styles.searchIcon}>
+            <Image
+              source={require("../assets/loupe.png")}
+              style={styles.icon}
+            />
+          </View>
+        </View>
 
         <Text style={styles.header}>Mes visites</Text>
         <View style={styles.whiteLine} />
-        {visits.map((visit, index) => (
-          <View key={index} style={styles.row}>
-            {/*<Image style={styles.photo} source={{ uri: visit.photo }} />*/}
-            <View style={styles.content}>
-              <Text style={styles.text}>{visit.nom}</Text>
-              <Text style={styles.date}>Date : {visit.date}</Text>
-              {/*<Text style={{ flex: 1, flexWrap: "wrap" }}>
-                Appréciation : {visit.comment}
-        </Text>*/}
-
-              <TouchableOpacity
-                style={[styles.buttonContainer, styles.signInButton]}
-                onPress={() => navigation.navigate("Visit")}
-              >
-                <Text style={styles.loginText}>En savoir plus</Text>
-              </TouchableOpacity>
-            </View>
+        {visits.length === 0 ? (
+          <View style={styles.noVisitsContainer}>
+            <Text style={styles.noVisitsText}>
+              Vous n'avez encore visité aucun lieu.
+            </Text>
           </View>
-        ))}
+        ) : (
+          visits.map((visit, index) => (
+            <View key={index} style={styles.row}>
+              {/*<Image style={styles.photo} source={{ uri: visit.photo }} />*/}
+              <View style={styles.content}>
+                <Text style={styles.text}>{visit.nom}</Text>
+                <Text style={styles.date}>Date : {visit.date}</Text>
+                {/*<Text style={{ flex: 1, flexWrap: "wrap" }}>
+                  Appréciation : {visit.comment}
+            </Text>*/}
+
+                <TouchableOpacity
+                  style={[styles.buttonContainer, styles.signInButton]}
+                  onPress={() => navigation.navigate("Visit")}
+                >
+                  <Text style={styles.loginText}>En savoir plus</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))
+        )}
       </View>
     </ScrollView>
   );
@@ -68,13 +89,28 @@ const styles = StyleSheet.create({
     height: 150,
     borderRadius: 8,
   },
-  research: {
-    backgroundColor: "rgba(245,245,245,1)",
-    borderRadius: 10,
-    color: "rgba(100,100,100,1)",
-    marginTop: 20,
+  containerResearch: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    backgroundColor: "#fff",
+    height: 50,
     width: 380,
-    height: 35,
+    shadowColor: "rgba(270,270,270,1)",
+    borderRadius: 20,
+    marginVertical: 10,
+    marginLeft: 5,
+    //borderWidth: 1,
+    //borderColor: "#ccc",
+  },
+
+  research: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingLeft: 5,
+    fontSize: 16,
+    color: "#000",
   },
   buttonContainer: {
     height: 40,
@@ -85,7 +121,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
   signInButton: {
-    backgroundColor: "rgba(186,104,163,1)",
+    backgroundColor: "rgba(120,116,172,1)",
   },
   loginText: {
     color: "white",
@@ -121,7 +157,7 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: "center",
-    backgroundColor: "rgba( 226, 223, 231, 1)",
+    backgroundColor: "rgba( 239, 239, 250, 1)",
   },
 
   content: {

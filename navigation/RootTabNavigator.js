@@ -16,7 +16,7 @@ const RootTabNavigator = () => {
     <NavigationContainer>
       <StatusBar
         barStyle="light-content"
-        backgroundColor="rgba(169,147,179,1)"
+        backgroundColor="rgba(161,158,204,1)"
       />
       <Tab.Navigator
         screenOptions={({ route }) => ({
@@ -34,8 +34,8 @@ const RootTabNavigator = () => {
             return <Ionicons name={iconName} size={size} color={color} />;
           },
           tabBarActiveTintColor: "white",
-          tabBarInactiveTintColor: "lightgray",
-          tabBarStyle: { backgroundColor: "rgba(169,147,179,1)" },
+          tabBarInactiveTintColor: "lightgrey",
+          tabBarStyle: { backgroundColor: "rgba(161,158,204,1)" },
           headerShown: false,
         })}
       >
