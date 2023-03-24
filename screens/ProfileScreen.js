@@ -8,12 +8,18 @@ import {
   TouchableOpacity,
 } from "react-native";
 import fetchcomptes from "../api/compteapi.js";
+import { useContext } from "react";
+import AuthContext from "../AuthContext";
+
 const ProfileScreen = ({ navigation }) => {
+  const { user } = useContext(AuthContext);
   return (
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.row}>
-          <Text style={styles.textLeft}>Bonjour, Test</Text>
+          <Text style={styles.textLeft}>
+            Bonjour {user ? user.prenom : "Invité"}
+          </Text>
           <TouchableOpacity
             style={[styles.buttonContainer, styles.editButton]}
             onPress={() => navigation.navigate("EditProfile")}
@@ -24,19 +30,19 @@ const ProfileScreen = ({ navigation }) => {
         <View style={styles.whiteLine} />
         <View style={styles.row}>
           <Text style={styles.textLeft}>Nom</Text>
-          <Text style={styles.textRight}>Test</Text>
+          <Text style={styles.textRight}>{user.nom}</Text>
         </View>
         <View style={styles.row}>
           <Text style={styles.textLeft}>Prénom</Text>
-          <Text style={styles.textRight}>Test2</Text>
+          <Text style={styles.textRight}>{user.prenom}</Text>
         </View>
         <View style={styles.row}>
           <Text style={styles.textLeft}>Adresse mail</Text>
-          <Text style={styles.textRight}>test@ensc.fr</Text>
+          <Text style={styles.textRight}>{user.mail}</Text>
         </View>
         <View style={styles.row}>
           <Text style={styles.textLeft}>Mot de passe</Text>
-          <Text style={styles.textRight}>********</Text>
+          <Text style={styles.textRight}>{user.motDePasse}</Text>
         </View>
         <View style={styles.row}>
           <Text style={styles.textLeft}>Mes préférences</Text>

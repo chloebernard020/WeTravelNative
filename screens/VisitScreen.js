@@ -11,16 +11,18 @@ import {
 import { fetchVisitesParCompte } from "../api/visiteapi";
 
 const VisitScreen = ({ route }) => {
-  const { id } = route.params;
-  const [visites, setVisites] = useState([]); // initialisation du state pour les visites
+  {
+    const { user } = useContext(AuthContext);
+    const [visites, setVisites] = useState([]); // initialisation du state pour les visites
 
-  useEffect(() => {
-    const loadVisites = async () => {
-      const visitesData = await fetchVisitesParCompte(id); // appel à votre fonction d'appel API
-      setVisites(visitesData); // mise à jour du state avec les données récupérées depuis l'API
-    };
-    loadVisites();
-  }, []);
+    useEffect(() => {
+      const loadVisites = async () => {
+        const visitesData = await fetchVisitesParCompte(user.id); // appel à votre fonction d'appel API
+        setVisites(visitesData); // mise à jour du state avec les données récupérées depuis l'API
+      };
+      loadVisites();
+    }, []);
+  }
   return (
     <View style={styles.container}>
       {visites.map((visite) => (

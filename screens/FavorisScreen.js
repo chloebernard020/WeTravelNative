@@ -7,49 +7,52 @@ import {
   ScrollView,
   Image,
   TextInput,
+  TouchableOpacity,
 } from "react-native";
-
-import { fetchVisitesParCompte } from "../api/visiteapi";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { fetchFavorisParCompte } from "../api/favorisapi";
 import { fetchLieu } from "../api/lieuxapi";
 import { fetchVille } from "../api/villeapi";
 import AuthContext from "../AuthContext";
 const VisitScreen = ({ route }) => {
   const { user } = useContext(AuthContext);
-  const [visites, setVisites] = useState([]); // initialisation du state pour les visites
+  const [favoris, setFavoris] = useState([]); // initialisation du state pour les visites
   const [searchName, setSearchName] = useState("");
 
   const handleSearchNameChange = (text) => {
     setSearchName(text);
   };
   useEffect(() => {
-    const loadVisites = async () => {
-      const visitesData = await fetchVisitesParCompte(user.id); // appel à votre fonction d'appel API
-      setVisites(visitesData); // mise à jour du state avec les données récupérées depuis l'API
+    const loadFavoris = async () => {
+      const favorisData = await fetchFavorisParCompte(user.id); // appel à votre fonction d'appel API
+      setFavoris(favorisData); // mise à jour du state avec les données récupérées depuis l'API
     };
-    loadVisites();
+    loadFavoris();
   }, []);
 
   const [lieux, setLieux] = useState([]);
   useEffect(() => {
     const loadLieux = async () => {
       const newLieux = await Promise.all(
-        visites.map((visite) => fetchLieu(visite.lieuId))
+        favoris.map((favori) => fetchLieu(favori.lieuId))
       );
       setLieux(newLieux);
     };
     loadLieux();
-  }, [visites]);
+  }, [favoris]);
 
-  const [villes, setVilles] = useState([]);
-  useEffect(() => {
-    const loadVilles = async () => {
-      const newVilles = await Promise.all(
-        lieux.map((lieu) => fetchVille(lieu.villeId))
-      );
-      setVilles(newVilles);
-    };
-    loadVilles();
-  }, [visites]);
+  const [heartIcon, setHeartIcon] = useState("heart");
+  const [favorite, setFavorite] = useState();
+
+  const handlePress = () => {
+    setFavorite(!favorite);
+    if (!favorite) {
+      setHeartIcon("heart");
+      onPress();
+    } else {
+      setHeartIcon("heart-outline");
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -65,34 +68,33 @@ const VisitScreen = ({ route }) => {
           <Image source={require("../assets/loupe.png")} style={styles.icon} />
         </View>
       </View>
-      <Text style={styles.header}>Mes visites</Text>
+      <Text style={styles.header}>Mes favoris</Text>
       <View style={styles.whiteLine} />
-      {visites.map((visite) => (
-        <View key={visite.id} style={styles.white}>
+
+      {favoris.map((favori) => (
+        <View key={favori.id} style={styles.white}>
           <Image
             style={styles.photo}
             source={{
-              uri: lieux.find((v) => v.id === visite.lieuId)?.photo || "",
+              uri: lieux.find((v) => v.id === favori.lieuId)?.photo || "",
             }}
           />
-          <View>
+          <View style={{ justifyContent: "center" }}>
             <Text style={styles.subheader}>
-              {lieux.find((v) => v.id === visite.lieuId)?.nom || ""},{" "}
-              {villes.find((v) => v.id === visite.lieuId)?.nom || ""}
+              {lieux.find((v) => v.id === favori.lieuId)?.nom || ""}
             </Text>
-            {/*<Image style={styles.photo} source={{ uri: visite.photo }} />*/}
-            <Text style={styles.headdescription}>Date : {visite.date}</Text>
-            <Text style={styles.headdescription}>Mon appréciation</Text>
-            {/*visite.appreciations.length > 0 && (
-            <View>
-              <Text style={styles.appreciation}>
-                Date : {visite.appreciations[0].date}
-              </Text>
-              <Text style={styles.appreciation}>
-                Commentaire : {visite.appreciations[0].commentaire}
-              </Text>
-            </View>
-          )*/}
+            <Text style={styles.description} numberOfLines={3}>
+              {lieux.find((v) => v.id === favori.lieuId)?.description || ""}
+            </Text>
+          </View>
+          <View
+            style={{
+              justifyContent: "center",
+            }}
+          >
+            <TouchableOpacity onPress={handlePress}>
+              <Ionicons name={heartIcon} size={24} style={styles.icon} />
+            </TouchableOpacity>
           </View>
         </View>
       ))}
@@ -124,9 +126,9 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 14,
-    marginLeft: 15,
-    marginRight: 15,
+    marginRight: 30,
     marginBottom: 15,
+    width: 200,
     //fontFamily: "ArialMT",
     color: "rgba(69, 82, 152, 1)",
   },
@@ -148,6 +150,12 @@ const styles = StyleSheet.create({
     //fontFamily: "ArialMT",
     color: "rgba(69, 82, 152, 1)",
     alignItems: "center",
+  },
+
+  icon: {
+    color: "red",
+
+    marginVertical: 5,
   },
 
   headdescription: {

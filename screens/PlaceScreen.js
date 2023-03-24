@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Text,
   View,
@@ -7,7 +7,6 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
-  Animated,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { fetchLieu } from "../api/lieuxapi";
@@ -15,8 +14,13 @@ import { fetchVille } from "../api/villeapi";
 import { fetchPays } from "../api/paysapi";
 import { fetchCulturesParLieu } from "../api/cultureapi";
 import { fetchAppreciationsParLieu } from "../api/appreciationapi";
+import { fetchFavorisParCompte } from "../api/favorisapi";
+import { addFavori } from "../api/favorisapi";
+import AuthContext from "../AuthContext";
+
 const PlaceScreen = ({ route, navigation }) => {
   const { place } = route.params;
+  const { user } = useContext(AuthContext);
   const [lieu, setLieu] = useState([]);
 
   useEffect(() => {
@@ -65,16 +69,45 @@ const PlaceScreen = ({ route, navigation }) => {
   }, []);
 
   const [heartIcon, setHeartIcon] = useState("heart-outline");
-  const [favorite, setFavorite] = useState();
+  const [favorite, setFavorite] = useState(false);
+  useEffect(() => {
+    const loadFavoris = async () => {
+      const newFavoris = await fetchFavorisParCompte(user.id);
+      if (newFavoris.includes(place.id)) {
+        setFavorite(true);
+        setHeartIcon("heart");
+      } else {
+        setFavorite(false);
+        setHeartIcon("heart-outline");
+      }
+    };
+    loadFavoris();
+  }, [favorite]);
+
+  const toggleFavorite = async () => {
+    if (favorite) {
+      // Remove the place from favorites
+      try {
+        //await removePlaceFromFavorites(user.id, PLACE_ID);
+        setFavorite(false);
+        setHeartIcon("heart-outline");
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      // Add the place to favorites
+      try {
+        await addFavori(user.id, place.id);
+        setFavorite(true);
+        setHeartIcon("heart");
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
 
   const handlePress = () => {
-    setFavorite(!favorite);
-    if (!favorite) {
-      setHeartIcon("heart");
-      onPress();
-    } else {
-      setHeartIcon("heart-outline");
-    }
+    toggleFavorite();
   };
 
   return (
@@ -82,18 +115,26 @@ const PlaceScreen = ({ route, navigation }) => {
       <View style={styles.container}>
         <Image style={styles.photo} source={{ uri: lieu.photo }} />
         <View style={styles.informations}>
-          <Text style={styles.header}>{lieu.nom ? lieu.nom : ""}</Text>
-          <Text style={styles.subheader}>
-            {ville.nom ? ville.nom : ""}, {pays.nom ? pays.nom : ""}
-          </Text>
-          <TouchableOpacity
-            style={[styles.buttonContainer, styles.signInButton]}
-          >
-            <Text style={styles.loginText}>J'ai visité ce lieu</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handlePress}>
-            <Ionicons name={heartIcon} size={24} style={styles.icon} />
-          </TouchableOpacity>
+          <View>
+            <Text style={styles.header}>{lieu.nom ? lieu.nom : ""}</Text>
+            <Text style={styles.subheader}>
+              {ville.nom ? ville.nom : ""}, {pays.nom ? pays.nom : ""}
+            </Text>
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <TouchableOpacity
+              style={[styles.buttonContainer, styles.signInButton]}
+            >
+              <Text style={styles.loginText}>J'ai visité ce lieu</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handlePress}
+              color={favorite ? "red" : "gray"}
+            >
+              <Ionicons name={heartIcon} size={24} style={styles.icon} />
+            </TouchableOpacity>
+          </View>
           <View style={styles.whiteLine} />
           <Text style={styles.headdescription}>Description</Text>
 

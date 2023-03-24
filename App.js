@@ -1,27 +1,25 @@
-import { React, useState, useEffect } from "react";
+import React from "react";
+import { useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
-import RootTabNavigator from "./navigation/RootTabNavigator";
-import AuthentificationStackNavigator from "./navigation/AuthentificationStackNavigator";
-import { NavigationContainer } from "@react-navigation/native";
-import { ExploreStackNavigator } from "./navigation/ExploreStackNavigator";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { AuthFormScreen } from "./screens/AuthFormScreen";
+import { StyleSheet } from "react-native";
+import HomeScreen from "./screens/HomeScreen";
+import AuthContext from "./AuthContext";
 
 export default function App() {
-  const [loggedUser, setLoggedUser] = useState();
-  const authForm = !loggedUser ? (
-    <AuthentificationStackNavigator
-      onLoginSuccessful={(user) => setLoggedUser(user)}
-    />
-  ) : null;
-  const roottab = loggedUser ? <RootTabNavigator /> : null;
+  const [authenticated, setAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
 
+  const handleLogout = () => {
+    // appel à l'API de déconnexion
+    // si la déconnexion réussit, mettre authenticated à false
+    setAuthenticated(false);
+  };
   return (
-    <View style={styles.container}>
-      {authForm}
-      {roottab}
-    </View>
+    <AuthContext.Provider
+      value={{ authenticated, setAuthenticated, user, setUser }}
+    >
+      <HomeScreen />
+    </AuthContext.Provider>
   );
 }
 

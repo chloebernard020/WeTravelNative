@@ -1,6 +1,7 @@
 import { React, useState } from "react";
 import { StyleSheet } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
 import PlaceScreen from "../screens/PlaceScreen";
 import RegFormScreen from "../screens/RegFormScreen";
 import AuthFormScreen from "../screens/AuthFormScreen";
@@ -8,18 +9,11 @@ import { NavigationContainer } from "@react-navigation/native";
 
 const AuthentificationStack = createNativeStackNavigator();
 
-const AuthentificationStackNavigator = ({ onLoginSuccessful }) => {
-  const f = (a) => {
-    onLoginSuccessful(a);
-  };
-
-  const AuthFormComponent = (props) => (
-    <AuthFormScreen {...props} onLoginSuccessful={f} />
-  );
+const AuthentificationStackNavigator = () => {
   return (
     <NavigationContainer>
       <AuthentificationStack.Navigator
-        initialRouteName={AuthFormScreen}
+        initialRouteName="AuthForm"
         screenOptions={({ route }) => ({
           headerStyle: {
             backgroundColor: "rgba(161,158,204,1)",
@@ -32,8 +26,8 @@ const AuthentificationStackNavigator = ({ onLoginSuccessful }) => {
       >
         <AuthentificationStack.Screen
           name="AuthForm"
+          component={AuthFormScreen}
           options={{ title: "Connexion" }}
-          component={AuthFormComponent}
         />
 
         <AuthentificationStack.Screen

@@ -8,8 +8,8 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
-  FlatList,
 } from "react-native";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 import { fetchLieux } from "../api/lieuxapi";
 import { fetchVille } from "../api/villeapi";
@@ -51,7 +51,7 @@ const ExploreScreen = ({ navigation }) => {
   }, [randomPlaces]);
 
   const [pays, setPays] = useState([]);
-
+  const [lieuxParPays, setLieuxParPays] = useState([]);
   useEffect(() => {
     const getPays = async () => {
       try {
@@ -64,28 +64,38 @@ const ExploreScreen = ({ navigation }) => {
     };
     getPays();
   }, []);
+  const [randomPays, setRandomPays] = useState(null);
+  useEffect(
+    () => {
+      const getRandomPays = () => {
+        if (pays.length > 0) {
+          const randomIndex = Math.floor(Math.random() * pays.length);
+          const selectedPays = pays[randomIndex];
+          setRandomPays(selectedPays);
+        }
+      };
 
-  const randomIndex = Math.floor(Math.random() * pays.length);
-  const randomPays = pays[randomIndex];
+      const getLieux = async () => {
+        try {
+          if (randomPays) {
+            const villes = await fetchVillesParPays(randomPays.id);
+            const lieuxParVilles = await Promise.all(
+              villes.map((ville) => fetchLieuxParVille(ville.id))
+            );
+            setLieuxParPays(lieuxParVilles);
+          }
+        } catch (error) {
+          console.error(error);
+          // Gérer l'erreur ici
+        }
+      };
 
-  const [lieuxParPays, setLieuxParPays] = useState([]);
-
-  useEffect(() => {
-    const getLieux = async () => {
-      try {
-        const villes = await fetchVillesParPays(randomPays.id);
-        const lieuxParVilles = await Promise.all(
-          villes.map((ville) => fetchLieuxParVille(ville.id))
-        );
-        setLieuxParPays(lieuxParVilles);
-      } catch (error) {
-        console.error(error);
-        // Gérer l'erreur ici
-      }
-    };
-    getLieux();
-  }, []);
-
+      getRandomPays();
+      getLieux();
+    },
+    [pays],
+    [lieuxParPays]
+  );
   return (
     <ScrollView>
       <View style={styles.page}>
@@ -117,12 +127,19 @@ const ExploreScreen = ({ navigation }) => {
                       {place.nom},{" "}
                       {villes.find((v) => v.id === place.villeId)?.nom || ""}
                     </Text>
-                    <TouchableOpacity
-                      style={[styles.buttonContainer, styles.signInButton]}
-                      onPress={() => navigation.navigate("Place", { place })}
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                      }}
                     >
-                      <Text style={styles.loginText}>Découvrir</Text>
-                    </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[styles.buttonContainer, styles.signInButton]}
+                        onPress={() => navigation.navigate("Place", { place })}
+                      >
+                        <Text style={styles.loginText}>Découvrir</Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </View>
               ))}
@@ -346,9 +363,9 @@ const styles = StyleSheet.create({
   },
   buttonContainer2: {
     height: 40,
-    justifyContent: "center",
+
     marginTop: 15,
-    alignItems: "center",
+
     width: 200,
     borderRadius: 30,
   },

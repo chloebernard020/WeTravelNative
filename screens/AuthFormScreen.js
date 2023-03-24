@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, useContext } from "react";
 import {
   Alert,
   StyleSheet,
@@ -9,25 +9,33 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Input } from "../components/Input";
-import authenticateUser from "../api/compteapi";
+import { authenticateUser } from "../api/compteapi";
+import AuthContext from "../AuthContext";
 
-export const AuthFormScreen = ({ onLoginSuccessful }) => {
-  const [login, setLogin] = useState("");
+export const AuthFormScreen = () => {
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
-  const signIn = () => {
-    let user = authenticateUser(login, password);
-    if (user == null) {
-      Alert.alert(
-        "Erreur de connexion",
-        "Le nom d'utilisateur ou le mot de passe est incorrect."
-      );
-    } else {
-      onLoginSuccessful(user);
-      Alert.alert(
-        "Connexion réussie",
-        `Vous êtes maintenant connecté en tant que ${user.nom}.`
-      );
+  const { setAuthenticated } = useContext(AuthContext);
+  const { setUser } = useContext(AuthContext);
+  const handleLogin = async () => {
+    try {
+      let user = await authenticateUser(username, password);
+      if (user == null) {
+        Alert.alert(
+          "Erreur de connexion",
+          "Le nom d'utilisateur ou le mot de passe est incorrect."
+        );
+      } else {
+        setAuthenticated(true);
+        setUser(user);
+        Alert.alert(
+          "Connexion réussie",
+          `Vous êtes maintenant connecté(e) en tant que ${user.prenom}.`
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Erreur de connexion", "Impossible de se connecter.");
     }
   };
 
@@ -48,18 +56,18 @@ export const AuthFormScreen = ({ onLoginSuccessful }) => {
         placeholder="Email"
         imageUrl="https://img.icons8.com/external-dreamstale-lineal-dreamstale/32/null/external-at-mail-dreamstale-lineal-dreamstale.png"
         hideCharacters={false}
-        onChangeText={(text) => setLogin(text)}
+        onChangeText={setUsername}
       />
       <Text style={styles.subheader}>Entrez votre mot de passe</Text>
       <Input
         placeholder="Mot de passe"
         imageUrl="https://img.icons8.com/ios/50/null/password1--v1.png"
         hideCharacters={true}
-        onChangeText={(text) => setPassword(text)}
+        onChangeText={setPassword}
       />
       <TouchableOpacity
         style={[styles.buttonContainer, styles.signInButton]}
-        onPress={signIn}
+        onPress={handleLogin}
       >
         <Text style={styles.loginText}>Se connecter</Text>
       </TouchableOpacity>
