@@ -6,6 +6,7 @@ import {
   View,
   Image,
   TouchableOpacity,
+  TextInput,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Input } from "../components/Input";
@@ -52,19 +53,51 @@ export const AuthFormScreen = () => {
 
       <Text style={styles.header}>Se connecter</Text>
       <Text style={styles.subheader}>Entrez votre adresse mail</Text>
-      <Input
+      <View style={styles.container2}>
+        <Image
+          style={styles.inputIcon}
+          source={{
+            uri: "https://img.icons8.com/external-dreamstale-lineal-dreamstale/32/null/external-at-mail-dreamstale-lineal-dreamstale.png",
+          }}
+        />
+        <TextInput
+          style={styles.inputText}
+          placeholder="Email"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          secureTextEntry={false}
+          onChangeText={setUsername}
+        />
+      </View>
+      <Text style={styles.subheader}>Entrez votre mot de passe</Text>
+      <View style={styles.container2}>
+        <Image
+          style={styles.inputIcon}
+          source={{
+            uri: "https://img.icons8.com/ios/50/null/password1--v1.png",
+          }}
+        />
+        <TextInput
+          style={styles.inputText}
+          placeholder="Mot de passe"
+          autoCapitalize="none"
+          secureTextEntry={true}
+          onChangeText={setPassword}
+        />
+      </View>
+      {/*<Input
         placeholder="Email"
         imageUrl="https://img.icons8.com/external-dreamstale-lineal-dreamstale/32/null/external-at-mail-dreamstale-lineal-dreamstale.png"
         hideCharacters={false}
         onChangeText={setUsername}
-      />
-      <Text style={styles.subheader}>Entrez votre mot de passe</Text>
-      <Input
+      />*/}
+
+      {/*<Input
         placeholder="Mot de passe"
         imageUrl="https://img.icons8.com/ios/50/null/password1--v1.png"
         hideCharacters={true}
         onChangeText={setPassword}
-      />
+    />*/}
       <TouchableOpacity
         style={[styles.buttonContainer, styles.signInButton]}
         onPress={handleLogin}
@@ -90,6 +123,30 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba( 224, 222, 238, 1)",
+  },
+
+  container2: {
+    borderBottomColor: "#F5FCFF",
+    backgroundColor: "white",
+    borderRadius: 30,
+    borderBottomWidth: 1,
+    width: 250,
+    height: 45,
+    marginBottom: 20,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  inputText: {
+    height: 45,
+    marginLeft: 16,
+    borderBottomColor: "#FFFFFF",
+    flex: 1,
+  },
+  inputIcon: {
+    width: 30,
+    height: 30,
+    marginLeft: 15,
+    justifyContent: "center",
   },
   formImage: {
     width: 100,

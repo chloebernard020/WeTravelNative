@@ -14,95 +14,134 @@ import { fetchFavorisParCompte } from "../api/favorisapi";
 import { fetchLieu } from "../api/lieuxapi";
 import { fetchVille } from "../api/villeapi";
 import AuthContext from "../AuthContext";
-const VisitScreen = ({ route }) => {
+import { fetchVisitesParCompte } from "../api/visiteapi";
+
+const FavorisScreen = ({ route }) => {
   const { user } = useContext(AuthContext);
-  const [favoris, setFavoris] = useState([]); // initialisation du state pour les visites
+  const [favorites, setFavorites] = useState([]);
+  const [visits, setVisits] = useState([]); // initialisation du state pour les visites
+  const [visitedPlaces, setVisitedPlaces] = useState([]);
+  const [toVisitPlaces, setToVisitPlaces] = useState([]);
   const [searchName, setSearchName] = useState("");
+  const [lieux, setLieux] = useState([]);
+  const [activeButton, setActiveButton] = useState("visited");
 
   const handleSearchNameChange = (text) => {
     setSearchName(text);
   };
+
   useEffect(() => {
-    const loadFavoris = async () => {
-      const favorisData = await fetchFavorisParCompte(user.id); // appel à votre fonction d'appel API
-      setFavoris(favorisData); // mise à jour du state avec les données récupérées depuis l'API
+    const loadVisits = async () => {
+      const visitsData = await fetchVisitesParCompte(user.id); // appel à votre fonction d'appel API
+      setVisits(visitsData); // mise à jour du state avec les données récupérées depuis l'API
     };
-    loadFavoris();
+    loadVisits();
   }, []);
 
-  const [lieux, setLieux] = useState([]);
+  useEffect(() => {
+    const getFavorites = async () => {
+      if (user) {
+        const newFavorites = await fetchFavorisParCompte(user.id);
+        setFavorites(newFavorites);
+      }
+    };
+    getFavorites();
+  }, [user, favorites]);
+
   useEffect(() => {
     const loadLieux = async () => {
       const newLieux = await Promise.all(
-        favoris.map((favori) => fetchLieu(favori.lieuId))
+        favorites.map((favori) => fetchLieu(favori.lieuId))
       );
       setLieux(newLieux);
     };
     loadLieux();
-  }, [favoris]);
+  }, [favorites]);
 
-  const [heartIcon, setHeartIcon] = useState("heart");
-  const [favorite, setFavorite] = useState();
+  useEffect(() => {
+    const newVisitedPlaces = [];
+    const newToVisitPlaces = [];
 
-  const handlePress = () => {
-    setFavorite(!favorite);
-    if (!favorite) {
-      setHeartIcon("heart");
-      onPress();
-    } else {
-      setHeartIcon("heart-outline");
-    }
-  };
+    lieux.forEach((lieu) => {
+      const isVisited = visits.some((visit) => visit.lieuId === lieu.id);
+      if (isVisited) {
+        newVisitedPlaces.push(lieu);
+      } else {
+        newToVisitPlaces.push(lieu);
+      }
+    });
+
+    setVisitedPlaces(newVisitedPlaces);
+    setToVisitPlaces(newToVisitPlaces);
+  }, [lieux, visits]);
+
+  const displayedPlaces =
+    activeButton === "visited" ? visitedPlaces : toVisitPlaces;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.containerResearch}>
-        <TextInput
-          style={styles.research}
-          placeholder="Rechercher par nom ..."
-          value={searchName}
-          imageUrl="https://img.icons8.com/external-dreamstale-lineal-dreamstale/32/null/external-at-mail-dreamstale-lineal-dreamstale.png"
-          onChangeText={handleSearchNameChange}
-        />
-        <View style={styles.searchIcon}>
-          <Image source={require("../assets/loupe.png")} style={styles.icon} />
-        </View>
-      </View>
-      <Text style={styles.header}>Mes favoris</Text>
-      <View style={styles.whiteLine} />
-
-      {favoris.map((favori) => (
-        <View key={favori.id} style={styles.white}>
-          <Image
-            style={styles.photo}
-            source={{
-              uri: lieux.find((v) => v.id === favori.lieuId)?.photo || "",
-            }}
-          />
-          <View style={{ justifyContent: "center" }}>
-            <Text style={styles.subheader}>
-              {lieux.find((v) => v.id === favori.lieuId)?.nom || ""}
-            </Text>
-            <Text style={styles.description} numberOfLines={3}>
-              {lieux.find((v) => v.id === favori.lieuId)?.description || ""}
-            </Text>
-          </View>
-          <View
-            style={{
-              justifyContent: "center",
-            }}
+    <ScrollView>
+      <View style={styles.container}>
+        <Text style={styles.header}>Mes favoris</Text>
+        <View style={styles.whiteLine} />
+        <View style={{ flexDirection: "row" }}>
+          <TouchableOpacity
+            style={[
+              styles.buttonContainer,
+              activeButton === "visited" && styles.activeButton,
+            ]}
+            onPress={() => setActiveButton("visited")}
           >
-            <TouchableOpacity onPress={handlePress}>
-              <Ionicons name={heartIcon} size={24} style={styles.icon} />
-            </TouchableOpacity>
+            <Text style={styles.buttonText}>Lieux visités</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.buttonContainer,
+              activeButton === "toVisit" && styles.activeButton,
+            ]}
+            onPress={() => setActiveButton("toVisit")}
+          >
+            <Text style={styles.buttonText}>Lieux à voir</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.containerResearch}>
+          <TextInput
+            style={styles.research}
+            placeholder="Rechercher par nom ..."
+            value={searchName}
+            imageUrl="https://img.icons8.com/external-dreamstale-lineal-dreamstale/32/null/external-at-mail-dreamstale-lineal-dreamstale.png"
+            onChangeText={handleSearchNameChange}
+          />
+          <View style={styles.searchIcon}>
+            <Image
+              source={require("../assets/loupe.png")}
+              style={styles.icon}
+            />
           </View>
         </View>
-      ))}
-    </View>
+
+        {displayedPlaces.map((place) => (
+          <View key={place.id} style={styles.white}>
+            <Image
+              style={styles.photo}
+              source={{
+                uri: place.photo || "",
+              }}
+            />
+            <View style={{ justifyContent: "center" }}>
+              <Text style={styles.subheader}>{place.nom}</Text>
+              <Text style={styles.description} numberOfLines={3}>
+                {place.description}
+              </Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    </ScrollView>
   );
 };
 
-export default VisitScreen;
+export default FavorisScreen;
 
 const styles = StyleSheet.create({
   scroll: {
@@ -168,7 +207,6 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     backgroundColor: "rgba( 239, 239, 250, 1)",
-    height: 800,
   },
   containerResearch: {
     flexDirection: "row",
@@ -217,12 +255,19 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   buttonContainer: {
-    height: 40,
+    flex: 1,
+    height: 80,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 10,
-    width: 150,
-    borderRadius: 30,
+    backgroundColor: "#f2f2f2",
+  },
+  activeButton: {
+    backgroundColor: "#fff",
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
   },
   buttonContainer2: {
     height: 40,
@@ -231,9 +276,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: 150,
     borderRadius: 30,
-  },
-  signInButton: {
-    backgroundColor: "rgba(186,104,163,1)",
   },
   loginText: {
     color: "white",

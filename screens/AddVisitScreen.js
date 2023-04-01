@@ -1,17 +1,110 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
-  View,
   Text,
-  FlatList,
+  View,
+  Button,
   StyleSheet,
-  TouchableOpacity,
-  ScrollView,
   TextInput,
+  ScrollView,
   Image,
+  TouchableOpacity,
 } from "react-native";
-import { fetchLieux } from "../api/lieuxapi";
-const AddVisitScreen = ({ navigation }) => {
-  return <View></View>;
+
+import DateTimePicker from "@react-native-community/datetimepicker";
+import Ionicons from "react-native-vector-icons/Ionicons";
+
+import { addVisite } from "../api/visiteapi";
+import { addAppreciation } from "../api/appreciationapi";
+import AuthContext from "../AuthContext";
+
+const AddVisitScreen = ({ route, navigation }) => {
+  const { place } = route.params;
+  const { user } = useContext(AuthContext);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const [date, setDate] = useState(new Date());
+
+  const onDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setDate(currentDate);
+    setShowDatePicker(false); // Masque le date picker une fois la date sélectionnée
+  };
+
+  const [text, setText] = useState("");
+
+  const handleTextChange = (newText) => {
+    setText(newText);
+  };
+
+  const addVisit = async () => {
+    if (date) {
+      try {
+        await addVisite(user, place, date);
+        navigation.navigate("Travels");
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      try {
+        Alert.alert("Vous n'avez pas sélectionné de date");
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    // Masque le date picker une fois la date sélectionnée
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.header}>Votre visite</Text>
+      <View style={styles.whiteLine} />
+      <View style={styles.whiteSquare}>
+        <View style={styles.contentContainer}>
+          <Text style={styles.text}>Quand avez-vous visité {place.nom} ?</Text>
+          <TouchableOpacity
+            style={[styles.buttonContainer, styles.signInButton]}
+            onPress={() => setShowDatePicker(true)}
+          >
+            <Text style={styles.loginText}>Sélectionner une date</Text>
+          </TouchableOpacity>
+          <Text style={styles.text}>
+            Date sélectionnée : {date.toLocaleDateString()}
+          </Text>
+          {showDatePicker && (
+            <DateTimePicker
+              value={date}
+              mode="date"
+              display="spinner"
+              maximumDate={new Date()} // désactive les dates futures
+              onChange={onDateChange}
+            />
+          )}
+        </View>
+      </View>
+      <View style={styles.whiteSquare}>
+        <View style={styles.contentContainer}>
+          <Text style={styles.text}>
+            Qu'avez-vous pensé de {place.nom} ? (Facultatif)
+          </Text>
+          <TextInput
+            style={styles.input}
+            multiline={true}
+            numberOfLines={4}
+            placeholder="Entrez votre commentaire ici..."
+            value={text}
+            onChangeText={handleTextChange}
+          />
+        </View>
+      </View>
+      <View style={styles.whiteLine} />
+      <TouchableOpacity
+        style={[styles.buttonContainer, styles.signInButton]}
+        onPress={() => addVisit()}
+      >
+        <Text style={styles.loginText}>Ajouter cette visite</Text>
+      </TouchableOpacity>
+    </View>
+  );
 };
 
 export default AddVisitScreen;
@@ -23,61 +116,31 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
-  header: {
-    fontSize: 24,
-    marginTop: 20,
-    //fontFamily: "ArialRoundedMTBold",
-    color: "rgba(57, 56, 131, 1)",
-  },
   text: {
-    fontSize: 20,
+    fontSize: 16,
     marginBottom: 20,
     //fontFamily: "ArialMT",
     color: "rgba(69, 82, 152, 1)",
   },
   container: {
     backgroundColor: "rgba( 239, 239, 250, 1)",
-  },
-
-  containerResearch: {
-    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 10,
-    backgroundColor: "#fff",
-    height: 50,
-    width: 380,
-    shadowColor: "rgba(270,270,270,1)",
-    borderRadius: 20,
-    marginVertical: 10,
-    marginLeft: 5,
-    //borderWidth: 1,
-    //borderColor: "#ccc",
+    height: 1000,
   },
 
-  research: {
-    flex: 1,
-    paddingVertical: 10,
-    paddingLeft: 5,
+  label: {
     fontSize: 16,
-    color: "#000",
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  selectedDate: {
+    marginBottom: 10,
   },
 
-  mainContainer: {
-    height: 230,
-    flexDirection: "row",
-    margin: 10,
-  },
-  image: {
-    width: 150,
-    height: 150,
-    margin: 5,
-    borderRadius: 20,
-    backgroundColor: "rgba(245,245,245,1)",
-  },
   contentContainer: {
     flex: 1,
-    margin: 5,
+    marginVertical: 10,
+    alignItems: "center",
   },
   headerContainer: {
     flex: 3,
@@ -92,6 +155,14 @@ const styles = StyleSheet.create({
     paddingRight: 5,
   },
 
+  header: {
+    fontSize: 28,
+    marginTop: 40,
+    marginBottom: 5,
+    fontWeight: "bold",
+    //fontFamily: "Roboto",
+    color: "rgba(57, 56, 131, 1)",
+  },
   descriptionContainer: {
     flex: 7,
   },
@@ -111,9 +182,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 10,
-    width: 100,
+    width: 150,
     borderRadius: 30,
   },
+
   signInButton: {
     backgroundColor: "rgba(120,116,172,1)",
   },
@@ -125,5 +197,23 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: 380,
     backgroundColor: "white",
+  },
+
+  whiteSquare: {
+    height: 200,
+    width: 380,
+    backgroundColor: "rgba(270,270,270,1)",
+    borderRadius: 20,
+    marginBottom: 10,
+    shadowColor: "rgba(167,166,169,1)",
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.7,
+    shadowRadius: 10,
+    elevation: 10,
+    marginRight: 15,
+    marginLeft: 15,
+
+    marginHorizontal: 15,
+    marginTop: 20,
   },
 });

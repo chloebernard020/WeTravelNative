@@ -7,13 +7,15 @@ import {
   ScrollView,
   Image,
   TextInput,
+  TouchableOpacity,
+  Alert,
 } from "react-native";
 
-import { fetchVisitesParCompte } from "../api/visiteapi";
+import { fetchVisitesParCompte, removeVisite } from "../api/visiteapi";
 import { fetchLieu } from "../api/lieuxapi";
 import { fetchVille } from "../api/villeapi";
 import AuthContext from "../AuthContext";
-const VisitScreen = ({ route }) => {
+const VisitScreen = ({ route, navigation }) => {
   const { user } = useContext(AuthContext);
   const [visites, setVisites] = useState([]); // initialisation du state pour les visites
   const [searchName, setSearchName] = useState("");
@@ -21,6 +23,14 @@ const VisitScreen = ({ route }) => {
   const handleSearchNameChange = (text) => {
     setSearchName(text);
   };
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", async () => {
+      const visitesData = await fetchVisitesParCompte(user.id);
+      setVisites(visitesData);
+    });
+    return unsubscribe;
+  }, [navigation]);
   useEffect(() => {
     const loadVisites = async () => {
       const visitesData = await fetchVisitesParCompte(user.id); // appel à votre fonction d'appel API
@@ -50,6 +60,36 @@ const VisitScreen = ({ route }) => {
     };
     loadVilles();
   }, [visites]);
+
+  const [showBox, setShowBox] = useState(true);
+
+  const showConfirmDialog = (visiteId) => {
+    return Alert.alert(
+      "Êtes-vous sûr(e) ?",
+      "Êtes-vous sûr(e) de vouloir supprimer cette visite ?",
+      [
+        // Le bouton Oui
+        {
+          text: "Oui",
+          onPress: () => {
+            handleDeleteVisit(visiteId);
+          },
+        },
+        // Le bouton Non
+        // Ne fait rien mais enlève le message
+        {
+          text: "Non",
+        },
+      ]
+    );
+  };
+
+  const handleDeleteVisit = async (visiteId) => {
+    setShowBox(false);
+    await removeVisite(visiteId);
+    const newVisitesData = await fetchVisitesParCompte(user.id);
+    setVisites(newVisitesData);
+  };
 
   return (
     <View style={styles.container}>
@@ -83,6 +123,23 @@ const VisitScreen = ({ route }) => {
             {/*<Image style={styles.photo} source={{ uri: visite.photo }} />*/}
             <Text style={styles.headdescription}>Date : {visite.date}</Text>
             <Text style={styles.headdescription}>Mon appréciation</Text>
+            <View style={styles.row}>
+              <View style={[styles.buttonContainer, styles.editButton]}>
+                <TouchableOpacity title="Modifier" onPress={() => {}}>
+                  <Text style={styles.loginText}>Modifier</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={[styles.buttonContainer, styles.deleteButton]}>
+                <TouchableOpacity
+                  title="Supprimer"
+                  onPress={() => {
+                    showConfirmDialog(visite.id);
+                  }}
+                >
+                  <Text style={styles.loginText}>Supprimer</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
             {/*visite.appreciations.length > 0 && (
             <View>
               <Text style={styles.appreciation}>
@@ -107,6 +164,12 @@ const styles = StyleSheet.create({
     marginRight: 30,
     alignItems: "center",
     justifyContent: "center",
+  },
+  row: { flexDirection: "row", justifyContent: "space-between" },
+
+  deleteButtonContainer: {
+    marginTop: 10,
+    alignSelf: "flex-start",
   },
   header: {
     fontSize: 24,
@@ -151,7 +214,7 @@ const styles = StyleSheet.create({
   },
 
   headdescription: {
-    fontSize: 18,
+    fontSize: 14,
     marginTop: 5,
     //fontFamily: "ArialMT",
     color: "rgba(57, 56, 131, 1)",
@@ -187,8 +250,8 @@ const styles = StyleSheet.create({
   },
 
   photo: {
-    width: 100,
-    height: 100,
+    width: 120,
+    height: 120,
     marginVertical: 10,
     marginHorizontal: 10,
     borderRadius: 10,
@@ -212,20 +275,16 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 10,
-    width: 150,
-    borderRadius: 30,
+    marginVertical: 10,
+    marginRight: 10,
+    width: 100,
+    borderRadius: 10,
   },
-  buttonContainer2: {
-    height: 40,
-    justifyContent: "center",
-    marginTop: 5,
-    alignItems: "center",
-    width: 150,
-    borderRadius: 30,
+  editButton: {
+    backgroundColor: "rgba(86,141,172,1)",
   },
-  signInButton: {
-    backgroundColor: "rgba(186,104,163,1)",
+  deleteButton: {
+    backgroundColor: "rgb(233,85,85)",
   },
   loginText: {
     color: "white",

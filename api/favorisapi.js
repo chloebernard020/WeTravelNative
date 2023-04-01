@@ -14,9 +14,9 @@ export const fetchFavorisParCompte = async (id) => {
 export const addFavori = async (user, place) => {
   try {
     const response = await fetch(`${rootEndpoint}/FavoriApi`, {
-      method: "POST",
+      method: `POST`,
       headers: {
-        Accept: "application/json",
+        Accept: `application/json`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -32,21 +32,15 @@ export const addFavori = async (user, place) => {
   }
 };
 
-export const removeFavori = async (user, place) => {
+export const removeFavori = async (id) => {
   try {
-    const response = await fetch(`${rootEndpoint}/FavoriApi`, {
-      method: "POST",
+    const response = await fetch(`${rootEndpoint}/FavoriApi/${id}`, {
+      method: `DELETE`,
       headers: {
-        Accept: "application/json",
+        Accept: `application/json`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        compteId: user.id,
-        lieuId: place.id,
-      }),
     });
-    const favori = await response.json();
-    return favori;
   } catch (error) {
     console.error(error);
     throw error;

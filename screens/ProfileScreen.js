@@ -44,48 +44,6 @@ const ProfileScreen = ({ navigation }) => {
           <Text style={styles.textLeft}>Mot de passe</Text>
           <Text style={styles.textRight}>{user.motDePasse}</Text>
         </View>
-        <View style={styles.row}>
-          <Text style={styles.textLeft}>Mes préférences</Text>
-          <TouchableOpacity
-            style={[styles.buttonContainer, styles.editButton]}
-            onPress={() => navigation.navigate("EditPreferences")}
-          >
-            <Text style={styles.loginText}>Modifier</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.whiteLine} />
-        <Text style={styles.textLeft}>Localisations :</Text>
-        <View style={styles.row2}>
-          <TouchableOpacity
-            style={[styles.preferencesContainer, styles.preferencesButton]}
-            //onPress={() => navigation.navigate("EditPreferences")}
-          >
-            <Text style={styles.localisationText}>Europe</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.preferencesContainer, styles.preferencesButton]}
-            //onPress={() => navigation.navigate("EditPreferences")}
-          >
-            <Text style={styles.localisationText}>Amérique du Sud</Text>
-          </TouchableOpacity>
-        </View>
-        <Text style={styles.textLeft}>Types de lieux : </Text>
-        <View style={styles.row2}>
-          <TouchableOpacity
-            style={[styles.preferencesContainer, styles.preferencesButton]}
-            //onPress={() => navigation.navigate("EditPreferences")}
-          >
-            <Text style={styles.localisationText}>Places</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.preferencesContainer, styles.preferencesButton]}
-            //onPress={() => navigation.navigate("EditPreferences")}
-          >
-            <Text style={styles.localisationText}>Monuments historiques</Text>
-          </TouchableOpacity>
-        </View>
       </View>
     </ScrollView>
   );

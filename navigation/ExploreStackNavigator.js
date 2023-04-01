@@ -4,6 +4,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import PlaceScreen from "../screens/PlaceScreen";
 import ExploreScreen from "../screens/ExploreScreen";
 import AllPlacesScreen from "../screens/AllPlacesScreen";
+import AddVisitScreen from "../screens/AddVisitScreen";
+
 const ExploreStack = createNativeStackNavigator();
 
 const ExploreStackNavigator = () => {
@@ -39,6 +41,12 @@ const ExploreStackNavigator = () => {
         name="Place"
         component={PlaceScreen}
         options={{ title: "Informations sur le lieu" }}
+      />
+
+      <ExploreStack.Screen
+        name="AddVisit"
+        component={AddVisitScreen}
+        options={{ title: "Ajouter une visite" }}
       />
     </ExploreStack.Navigator>
   );

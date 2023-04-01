@@ -52,6 +52,7 @@ const ExploreScreen = ({ navigation }) => {
 
   const [pays, setPays] = useState([]);
   const [lieuxParPays, setLieuxParPays] = useState([]);
+  const [randomPays, setRandomPays] = useState(null);
   useEffect(() => {
     const getPays = async () => {
       try {
@@ -64,58 +65,57 @@ const ExploreScreen = ({ navigation }) => {
     };
     getPays();
   }, []);
-  const [randomPays, setRandomPays] = useState(null);
-  useEffect(
-    () => {
-      const getRandomPays = () => {
-        if (pays.length > 0) {
-          const randomIndex = Math.floor(Math.random() * pays.length);
-          const selectedPays = pays[randomIndex];
-          setRandomPays(selectedPays);
-        }
-      };
+  useEffect(() => {
+    const getRandomPays = () => {
+      if (pays.length > 0 && !randomPays) {
+        const randomIndex = Math.floor(Math.random() * pays.length);
+        const selectedPays = pays[randomIndex];
+        setRandomPays(selectedPays);
+      }
+    };
+    getRandomPays();
+  }, [pays, randomPays]);
 
-      const getLieux = async () => {
-        try {
-          if (randomPays) {
-            const villes = await fetchVillesParPays(randomPays.id);
-            const lieuxParVilles = await Promise.all(
-              villes.map((ville) => fetchLieuxParVille(ville.id))
-            );
-            setLieuxParPays(lieuxParVilles);
-          }
-        } catch (error) {
-          console.error(error);
-          // Gérer l'erreur ici
+  useEffect(() => {
+    const getLieux = async () => {
+      try {
+        if (randomPays) {
+          const villes = await fetchVillesParPays(randomPays.id);
+          const lieuxParVilles = await Promise.all(
+            villes.map((ville) => fetchLieuxParVille(ville.id))
+          );
+          setLieuxParPays(lieuxParVilles);
         }
-      };
+      } catch (error) {
+        console.error(error);
+        // Gérer l'erreur ici
+      }
+    };
+    getLieux();
+  }, [randomPays]);
 
-      getRandomPays();
-      getLieux();
-    },
-    [pays],
-    [lieuxParPays]
-  );
+  const [randomVilles, setRandomVilles] = useState(null);
+
+  useEffect(() => {
+    const loadRandomVilles = async () => {
+      const newVilles = await Promise.all(
+        lieuxParPays.map((place) => fetchVille(place.villeId))
+      );
+      setRandomVilles(newVilles);
+    };
+    loadRandomVilles();
+  }, [lieuxParPays]);
+
   return (
     <ScrollView>
       <View style={styles.page}>
         <View>
-          <Text style={styles.header1}>Rechercher une destination</Text>
+          <Text style={styles.header1}>Explorer les destinations</Text>
         </View>
-        <View style={styles.containerResearch}>
-          <TextInput
-            style={styles.research}
-            placeholder="La tour eiffel ..."
-            imageUrl="https://img.icons8.com/external-dreamstale-lineal-dreamstale/32/null/external-at-mail-dreamstale-lineal-dreamstale.png"
-          />
-          <View style={styles.searchIcon}>
-            <Image
-              source={require("../assets/loupe.png")}
-              style={styles.icon}
-            />
-          </View>
-        </View>
-
+        <Image
+          style={styles.formImage}
+          source={require("../assets/logo.png")}
+        />
         <ScrollView>
           <View style={styles.container}>
             <ScrollView horizontal>
@@ -171,25 +171,29 @@ const ExploreScreen = ({ navigation }) => {
             <View style={styles.whiteLine} />
             <Text style={styles.header}>Découvrir {randomPays?.nom}</Text>
             <ScrollView horizontal>
-              {lieuxParPays.map((place) => (
-                <View style={styles.whiteSquare}>
-                  <View style={styles.scroll}>
-                    <Text style={styles.text}>
-                      {place.nom},{" "}
-                      {villes.find((v) => v.id === place.villeId)?.nom || ""}
-                    </Text>
-                    <Image style={styles.photo} source={{ uri: place.photo }} />
-                    <TouchableOpacity
-                      style={[styles.buttonContainer, styles.signInButton]}
-                      onPress={() =>
-                        navigation.navigate("Place", { lieu: place })
-                      }
-                    >
-                      <Text style={styles.loginText}>Découvrir</Text>
-                    </TouchableOpacity>
+              {lieuxParPays.flatMap((lieux) =>
+                lieux.map((place) => (
+                  <View key={place.id} style={styles.whiteSquare}>
+                    <View style={styles.scroll}>
+                      <Image
+                        style={styles.photo}
+                        source={{ uri: place.photo }}
+                      />
+                      <Text style={styles.text}>
+                        {place.nom},{" "}
+                        {randomVilles.find((v) => v.id === place.villeId)
+                          ?.nom || ""}
+                      </Text>
+                      <TouchableOpacity
+                        style={[styles.buttonContainer, styles.signInButton]}
+                        onPress={() => navigation.navigate("Place", { place })}
+                      >
+                        <Text style={styles.loginText}>Découvrir</Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
-              ))}
+                ))
+              )}
             </ScrollView>
           </View>
         </ScrollView>

@@ -15,100 +15,72 @@ import { fetchPays } from "../api/paysapi";
 import { fetchCulturesParLieu } from "../api/cultureapi";
 import { fetchAppreciationsParLieu } from "../api/appreciationapi";
 import { fetchFavorisParCompte } from "../api/favorisapi";
-import { addFavori } from "../api/favorisapi";
+import { addFavori, removeFavori } from "../api/favorisapi";
 import AuthContext from "../AuthContext";
 
 const PlaceScreen = ({ route, navigation }) => {
   const { place } = route.params;
   const { user } = useContext(AuthContext);
   const [lieu, setLieu] = useState([]);
+  const [cultures, setCultures] = useState([]);
+  const [ville, setVille] = useState([]);
+  const [pays, setPays] = useState([]);
+  const [appreciations, setAppreciations] = useState([]);
+
+  const [favorites, setFavorites] = useState([]);
+  const isFavorite = favorites.some((f) => f.lieuId === place.id);
 
   useEffect(() => {
     const getPlaceDetails = async () => {
       const placeDetails = await fetchLieu(place.id);
       setLieu(placeDetails);
-    };
-    getPlaceDetails();
-  }, []);
 
-  const [ville, setVille] = useState([]);
-
-  useEffect(() => {
-    const getPlaceDetails = async () => {
       const villeDetails = await fetchVille(place.villeId);
       setVille(villeDetails);
-    };
-    getPlaceDetails();
-  }, []);
 
-  const [pays, setPays] = useState([]);
-  useEffect(() => {
-    const getPlaceDetails = async () => {
-      const paysDetails = await fetchPays(ville.paysId);
+      const paysDetails = await fetchPays(villeDetails.paysId);
       setPays(paysDetails);
-    };
-    getPlaceDetails();
-  }, []);
 
-  const [cultures, setCultures] = useState([]);
-  useEffect(() => {
-    const getCulturesDetails = async () => {
       const culturesDetails = await fetchCulturesParLieu(place.id);
       setCultures(culturesDetails);
-    };
-    getCulturesDetails();
-  }, []);
 
-  const [appreciations, setAppreciations] = useState([]);
-  useEffect(() => {
-    const getAppreciationsDetails = async () => {
       const appreciationsDetails = await fetchAppreciationsParLieu(place.id);
       setAppreciations(appreciationsDetails);
-    };
-    getAppreciationsDetails();
-  }, []);
 
-  const [heartIcon, setHeartIcon] = useState("heart-outline");
-  const [favorite, setFavorite] = useState(false);
-  useEffect(() => {
-    const loadFavoris = async () => {
-      const newFavoris = await fetchFavorisParCompte(user.id);
-      if (newFavoris.includes(place.id)) {
-        setFavorite(true);
-        setHeartIcon("heart");
-      } else {
-        setFavorite(false);
-        setHeartIcon("heart-outline");
+      if (user) {
+        const newFavorites = await fetchFavorisParCompte(user.id);
+        setFavorites(newFavorites);
       }
     };
-    loadFavoris();
-  }, [favorite]);
+    getPlaceDetails();
+  }, [place.id, user, favorites]);
 
   const toggleFavorite = async () => {
-    if (favorite) {
-      // Remove the place from favorites
+    const favori = favorites.find(
+      (f) => f.compteId === user.id && f.lieuId === place.id
+    );
+    if (favori) {
       try {
-        //await removePlaceFromFavorites(user.id, PLACE_ID);
-        setFavorite(false);
-        setHeartIcon("heart-outline");
+        await removeFavori(favori.id);
+        setFavorites(
+          favorites.filter(
+            (f) => !(f.lieuId === place.id && f.compteId === user.id)
+          )
+        );
       } catch (error) {
         console.error(error);
       }
     } else {
-      // Add the place to favorites
       try {
-        await addFavori(user.id, place.id);
-        setFavorite(true);
-        setHeartIcon("heart");
+        const newFavori = await addFavori(user, place);
+        setFavorites([...favorites, newFavori]);
       } catch (error) {
         console.error(error);
       }
     }
   };
 
-  const handlePress = () => {
-    toggleFavorite();
-  };
+  const heartIcon = isFavorite ? "heart" : "heart-outline";
 
   return (
     <ScrollView>
@@ -124,13 +96,14 @@ const PlaceScreen = ({ route, navigation }) => {
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <TouchableOpacity
               style={[styles.buttonContainer, styles.signInButton]}
+              onPress={() => navigation.navigate("AddVisit", { place })}
             >
-              <Text style={styles.loginText}>J'ai visité ce lieu</Text>
+              <Text style={styles.loginText}>Ajouter une visite</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={handlePress}
-              color={favorite ? "red" : "gray"}
+              onPress={toggleFavorite}
+              color={isFavorite ? "red" : "gray"}
             >
               <Ionicons name={heartIcon} size={24} style={styles.icon} />
             </TouchableOpacity>
