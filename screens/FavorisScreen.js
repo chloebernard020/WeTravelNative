@@ -25,9 +25,14 @@ const FavorisScreen = ({ route }) => {
   const [searchName, setSearchName] = useState("");
   const [lieux, setLieux] = useState([]);
   const [activeButton, setActiveButton] = useState("visited");
+  const [filteredPlaces, setFilteredPlaces] = useState([]);
 
   const handleSearchNameChange = (text) => {
     setSearchName(text);
+    const filtered = displayedPlaces.filter((place) =>
+      place.nom.toLowerCase().includes(text.toLowerCase())
+    );
+    setFilteredPlaces(filtered);
   };
 
   useEffect(() => {
@@ -104,22 +109,6 @@ const FavorisScreen = ({ route }) => {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.containerResearch}>
-          <TextInput
-            style={styles.research}
-            placeholder="Rechercher par nom ..."
-            value={searchName}
-            imageUrl="https://img.icons8.com/external-dreamstale-lineal-dreamstale/32/null/external-at-mail-dreamstale-lineal-dreamstale.png"
-            onChangeText={handleSearchNameChange}
-          />
-          <View style={styles.searchIcon}>
-            <Image
-              source={require("../assets/loupe.png")}
-              style={styles.icon}
-            />
-          </View>
-        </View>
-
         {displayedPlaces.map((place) => (
           <View key={place.id} style={styles.white}>
             <Image
@@ -176,9 +165,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     marginHorizontal: 10,
 
-    width: 380,
+    width: 410,
     marginBottom: 20,
-    borderRadius: 10,
     flexDirection: "row",
   },
 
@@ -207,6 +195,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     backgroundColor: "rgba( 239, 239, 250, 1)",
+    height: 800,
   },
   containerResearch: {
     flexDirection: "row",
@@ -241,9 +230,9 @@ const styles = StyleSheet.create({
   },
   whiteSquare: {
     height: 300,
-    width: 350,
+    width: 450,
     backgroundColor: "rgba(245,245,245,1)",
-    borderRadius: 20,
+
     marginBottom: 20,
     marginTop: 20,
   },
@@ -256,10 +245,11 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flex: 1,
-    height: 80,
+    height: 50,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "rgba( 239, 239, 250, 1)",
+    borderColor: "white",
   },
   activeButton: {
     backgroundColor: "#fff",

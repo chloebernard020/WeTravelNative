@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TravelsScreen from "../screens/TravelsScreen";
-import VisitScreen from "../screens/VisitScreen";
+import VisitDetailsScreen from "../screens/VisitDetailsScreen";
 //import { screenOptions } from "../theme/styles";
 
 // Screen stack for home tab
@@ -30,9 +30,9 @@ const TravelsStackNavigator = () => {
         options={{ title: "Mes visites" }}
       />
       <TravelsStack.Screen
-        name="Visit"
-        component={VisitScreen}
-        options={{ title: "Mes visites" }}
+        name="VisitDetails"
+        component={VisitDetailsScreen}
+        options={{ title: "Détails" }}
       />
     </TravelsStack.Navigator>
   );

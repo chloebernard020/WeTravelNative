@@ -129,7 +129,7 @@ const PlaceScreen = ({ route, navigation }) => {
             {appreciations.map((appreciation) => (
               <View style={styles.whiteSquare}>
                 <View style={styles.scroll}>
-                  <Text style={styles.text}>Nom du compte</Text>
+                  <Text style={styles.text}>{user.mail}</Text>
                   <Text style={styles.text}>{appreciation.date}</Text>
                   <Text style={styles.text}>{appreciation.commentaire}</Text>
                 </View>

@@ -6,7 +6,6 @@ import {
   StyleSheet,
   TextInput,
   ScrollView,
-  Alert,
   Image,
   TouchableOpacity,
 } from "react-native";
@@ -14,53 +13,31 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-import { addVisite } from "../api/visiteapi";
 import { addAppreciation } from "../api/appreciationapi";
 import AuthContext from "../AuthContext";
 
-const AddVisitScreen = ({ route, navigation }) => {
+const AddAppreciationScreen = ({ route, navigation }) => {
   const { place } = route.params;
   const { user } = useContext(AuthContext);
-  const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const [date, setDate] = useState(new Date());
+  const [text, setText] = useState("");
+  const today = new Date();
 
-  const onDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setDate(currentDate);
-    setShowDatePicker(false); // Masque le date picker une fois la date sélectionnée
+  const handleTextChange = (newText) => {
+    setText(newText);
   };
 
-  const addVisit = async () => {
-    if (date) {
+  const AddAppreciation = async () => {
+    if (text != "") {
       try {
-        // Afficher une boîte de dialogue demandant si la personne veut ajouter une appréciation
-        Alert.alert(
-          "Ajouter une appréciation",
-          "Voulez-vous ajouter une appréciation pour cette visite ?",
-          [
-            {
-              text: "Oui",
-              onPress: async () => {
-                await addVisite(user, place, date);
-                navigation.navigate("AddAppreciation", { place });
-              },
-            },
-            {
-              text: "Non",
-              onPress: async () => {
-                await addVisite(user, place, date);
-                navigation.navigate("Travels");
-              },
-            },
-          ]
-        );
+        await addAppreciation(user, place, today, text);
+        navigation.navigate("Travels");
       } catch (error) {
         console.error(error);
       }
     } else {
       try {
-        Alert.alert("Vous n'avez pas sélectionné de date");
+        Alert.alert("Vous n'avez pas entré de commentaire");
       } catch (error) {
         console.error(error);
       }
@@ -70,42 +47,33 @@ const AddVisitScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Votre visite</Text>
+      <Text style={styles.header}>Votre appréciation</Text>
       <View style={styles.whiteLine} />
+
       <View style={styles.whiteSquare}>
         <View style={styles.contentContainer}>
-          <Text style={styles.text}>Quand avez-vous visité {place.nom} ?</Text>
-          <TouchableOpacity
-            style={[styles.buttonContainer, styles.signInButton]}
-            onPress={() => setShowDatePicker(true)}
-          >
-            <Text style={styles.loginText}>Sélectionner une date</Text>
-          </TouchableOpacity>
-          <Text style={styles.text}>
-            Date sélectionnée : {date.toLocaleDateString()}
-          </Text>
-          {showDatePicker && (
-            <DateTimePicker
-              value={date}
-              mode="date"
-              display="spinner"
-              maximumDate={new Date()} // désactive les dates futures
-              onChange={onDateChange}
-            />
-          )}
+          <Text style={styles.text}>Qu'avez-vous pensé de {place.nom} ?</Text>
+          <TextInput
+            style={styles.input}
+            multiline={true}
+            numberOfLines={4}
+            placeholder="Entrez votre commentaire ici..."
+            value={text}
+            onChangeText={handleTextChange}
+          />
         </View>
       </View>
       <TouchableOpacity
         style={[styles.buttonContainer, styles.signInButton]}
-        onPress={() => addVisit()}
+        onPress={() => AddAppreciation()}
       >
-        <Text style={styles.loginText}>Ajouter cette visite</Text>
+        <Text style={styles.loginText}>Ajouter cette appréciation</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-export default AddVisitScreen;
+export default AddAppreciationScreen;
 
 const styles = StyleSheet.create({
   scroll: {

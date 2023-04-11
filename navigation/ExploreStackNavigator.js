@@ -5,6 +5,7 @@ import PlaceScreen from "../screens/PlaceScreen";
 import ExploreScreen from "../screens/ExploreScreen";
 import AllPlacesScreen from "../screens/AllPlacesScreen";
 import AddVisitScreen from "../screens/AddVisitScreen";
+import AddAppreciationScreen from "../screens/AddAppreciationScreen";
 
 const ExploreStack = createNativeStackNavigator();
 
@@ -47,6 +48,12 @@ const ExploreStackNavigator = () => {
         name="AddVisit"
         component={AddVisitScreen}
         options={{ title: "Ajouter une visite" }}
+      />
+
+      <ExploreStack.Screen
+        name="AddAppreciation"
+        component={AddAppreciationScreen}
+        options={{ title: "Ajouter une appréciation" }}
       />
     </ExploreStack.Navigator>
   );

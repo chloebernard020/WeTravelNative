@@ -15,7 +15,7 @@ import { fetchVisitesParCompte, removeVisite } from "../api/visiteapi";
 import { fetchLieu } from "../api/lieuxapi";
 import { fetchVille } from "../api/villeapi";
 import AuthContext from "../AuthContext";
-const VisitScreen = ({ route, navigation }) => {
+const TravelsScreen = ({ navigation }) => {
   const { user } = useContext(AuthContext);
   const [visites, setVisites] = useState([]); // initialisation du state pour les visites
   const [searchName, setSearchName] = useState("");
@@ -105,42 +105,49 @@ const VisitScreen = ({ route, navigation }) => {
           <Image source={require("../assets/loupe.png")} style={styles.icon} />
         </View>
       </View>
-      <Text style={styles.header}>Mes visites</Text>
-      <View style={styles.whiteLine} />
-      {visites.map((visite) => (
-        <View key={visite.id} style={styles.white}>
-          <Image
-            style={styles.photo}
-            source={{
-              uri: lieux.find((v) => v.id === visite.lieuId)?.photo || "",
-            }}
-          />
-          <View>
-            <Text style={styles.subheader}>
-              {lieux.find((v) => v.id === visite.lieuId)?.nom || ""},{" "}
-              {villes.find((v) => v.id === visite.lieuId)?.nom || ""}
-            </Text>
-            {/*<Image style={styles.photo} source={{ uri: visite.photo }} />*/}
-            <Text style={styles.headdescription}>Date : {visite.date}</Text>
-            <Text style={styles.headdescription}>Mon appréciation</Text>
-            <View style={styles.row}>
-              <View style={[styles.buttonContainer, styles.editButton]}>
-                <TouchableOpacity title="Modifier" onPress={() => {}}>
-                  <Text style={styles.loginText}>Modifier</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={[styles.buttonContainer, styles.deleteButton]}>
-                <TouchableOpacity
-                  title="Supprimer"
-                  onPress={() => {
-                    showConfirmDialog(visite.id);
-                  }}
-                >
-                  <Text style={styles.loginText}>Supprimer</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            {/*visite.appreciations.length > 0 && (
+      <ScrollView>
+        <Text style={styles.header}>Mes visites</Text>
+        <View style={styles.whiteLine} />
+        <View>
+          {visites.map((visite) => (
+            <View key={visite.id} style={styles.white}>
+              <Image
+                style={styles.photo}
+                source={{
+                  uri: lieux.find((v) => v.id === visite.lieuId)?.photo || "",
+                }}
+              />
+              <View>
+                <Text style={styles.subheader}>
+                  {lieux.find((v) => v.id === visite.lieuId)?.nom || ""},{" "}
+                  {villes.find((v) => v.id === visite.lieuId)?.nom || ""}
+                </Text>
+                {/*<Image style={styles.photo} source={{ uri: visite.photo }} />*/}
+                <Text style={styles.headdescription}>Date : {visite.date}</Text>
+                <Text style={styles.headdescription}>Mon appréciation</Text>
+                <View style={styles.row}>
+                  <View style={[styles.buttonContainer, styles.editButton]}>
+                    <TouchableOpacity
+                      title="Détails"
+                      onPress={() =>
+                        navigation.navigate("VisitDetails", { visite })
+                      }
+                    >
+                      <Text style={styles.loginText}>Détails</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={[styles.buttonContainer, styles.deleteButton]}>
+                    <TouchableOpacity
+                      title="Supprimer"
+                      onPress={() => {
+                        showConfirmDialog(visite.id);
+                      }}
+                    >
+                      <Text style={styles.loginText}>Supprimer</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                {/*visite.appreciations.length > 0 && (
             <View>
               <Text style={styles.appreciation}>
                 Date : {visite.appreciations[0].date}
@@ -150,14 +157,16 @@ const VisitScreen = ({ route, navigation }) => {
               </Text>
             </View>
           )*/}
-          </View>
+              </View>
+            </View>
+          ))}
         </View>
-      ))}
+      </ScrollView>
     </View>
   );
 };
 
-export default VisitScreen;
+export default TravelsScreen;
 
 const styles = StyleSheet.create({
   scroll: {

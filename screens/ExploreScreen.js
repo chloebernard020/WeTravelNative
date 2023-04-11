@@ -109,13 +109,13 @@ const ExploreScreen = ({ navigation }) => {
   return (
     <ScrollView>
       <View style={styles.page}>
-        <View>
-          <Text style={styles.header1}>Explorer les destinations</Text>
-        </View>
         <Image
           style={styles.formImage}
           source={require("../assets/logo.png")}
         />
+        <View>
+          <Text style={styles.header1}>Explorer les destinations</Text>
+        </View>
         <ScrollView>
           <View style={styles.container}>
             <ScrollView horizontal>
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
   formImage: {
     width: 100,
     height: 100,
-    marginBottom: 20,
+    marginTop: 40,
   },
   page: {
     backgroundColor: "rgba( 224, 222, 238, 1)",
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
 
   header1: {
     fontSize: 28,
-    marginTop: 60,
+    marginTop: 30,
     marginBottom: 20,
     fontWeight: "bold",
     //fontFamily: "Roboto",
