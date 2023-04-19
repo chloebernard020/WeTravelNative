@@ -15,7 +15,7 @@ import { fetchAppreciationsParLieu } from "../api/appreciationapi";
 import { fetchPays } from "../api/paysapi";
 import AuthContext from "../AuthContext";
 
-const VisitDetailsScreen = ({ route }) => {
+const VisitDetailsScreen = ({ route, navigation }) => {
   const { user } = useContext(AuthContext);
   const { visite } = route.params;
   const [place, setPlace] = useState([]);
@@ -23,6 +23,7 @@ const VisitDetailsScreen = ({ route }) => {
   const [pays, setPays] = useState([]);
   const [appreciations, setAppreciations] = useState([]);
   const [appreciation, setAppreciation] = useState([]);
+  const [updatedVisite, setUpdatedVisite] = useState(visite);
 
   useEffect(() => {
     const getVisiteDetails = async () => {
@@ -50,6 +51,10 @@ const VisitDetailsScreen = ({ route }) => {
     getVisiteDetails();
   }, [appreciations]);
 
+  const onSave = (newDate) => {
+    setUpdatedVisite({ ...updatedVisite, date: newDate });
+  };
+
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -72,6 +77,18 @@ const VisitDetailsScreen = ({ route }) => {
           <Text style={styles.description}>
             Vous avez visité {place.nom} le : {visite.date}
           </Text>
+          <TouchableOpacity
+            style={[styles.buttonContainer, styles.signInButton]}
+            onPress={() =>
+              navigation.navigate("EditVisit", {
+                visite: updatedVisite,
+                place,
+                onSave,
+              })
+            }
+          >
+            <Text style={styles.loginText}>Modifier la date</Text>
+          </TouchableOpacity>
           <Text style={styles.headdescription}>Votre appréciation</Text>
 
           {appreciation ? (
@@ -79,6 +96,7 @@ const VisitDetailsScreen = ({ route }) => {
               <View style={styles.scroll}>
                 <Text style={styles.text}>{user.mail}</Text>
                 <Text style={styles.text}>{appreciation.date}</Text>
+
                 <Text style={styles.text}>{appreciation.commentaire}</Text>
               </View>
             </View>

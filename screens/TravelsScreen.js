@@ -92,20 +92,8 @@ const TravelsScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.containerResearch}>
-        <TextInput
-          style={styles.research}
-          placeholder="Rechercher par nom ..."
-          value={searchName}
-          imageUrl="https://img.icons8.com/external-dreamstale-lineal-dreamstale/32/null/external-at-mail-dreamstale-lineal-dreamstale.png"
-          onChangeText={handleSearchNameChange}
-        />
-        <View style={styles.searchIcon}>
-          <Image source={require("../assets/loupe.png")} style={styles.icon} />
-        </View>
-      </View>
-      <ScrollView>
+    <ScrollView>
+      <View style={styles.container}>
         <Text style={styles.header}>Mes visites</Text>
         <View style={styles.whiteLine} />
         <View>
@@ -114,7 +102,7 @@ const TravelsScreen = ({ navigation }) => {
               <Image
                 style={styles.photo}
                 source={{
-                  uri: lieux.find((v) => v.id === visite.lieuId)?.photo || "",
+                  uri: lieux.find((v) => v.id === visite.lieuId)?.photo,
                 }}
               />
               <View>
@@ -124,7 +112,6 @@ const TravelsScreen = ({ navigation }) => {
                 </Text>
                 {/*<Image style={styles.photo} source={{ uri: visite.photo }} />*/}
                 <Text style={styles.headdescription}>Date : {visite.date}</Text>
-                <Text style={styles.headdescription}>Mon appréciation</Text>
                 <View style={styles.row}>
                   <View style={[styles.buttonContainer, styles.editButton]}>
                     <TouchableOpacity
@@ -147,22 +134,12 @@ const TravelsScreen = ({ navigation }) => {
                     </TouchableOpacity>
                   </View>
                 </View>
-                {/*visite.appreciations.length > 0 && (
-            <View>
-              <Text style={styles.appreciation}>
-                Date : {visite.appreciations[0].date}
-              </Text>
-              <Text style={styles.appreciation}>
-                Commentaire : {visite.appreciations[0].commentaire}
-              </Text>
-            </View>
-          )*/}
               </View>
             </View>
           ))}
         </View>
-      </ScrollView>
-    </View>
+      </View>
+    </ScrollView>
   );
 };
 

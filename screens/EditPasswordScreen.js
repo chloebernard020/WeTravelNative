@@ -10,66 +10,43 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Input } from "../components/Input";
+import { fetchComptes, editCompte } from "../api/compteapi";
+
 import { authenticateUser } from "../api/compteapi";
 import AuthContext from "../AuthContext";
 
-export const AuthFormScreen = () => {
-  const [username, setUsername] = useState("");
+export const EditPasswordScreen = ({ route, navigation }) => {
+  const { compte } = route.params;
+  console.log(compte);
   const [password, setPassword] = useState("");
-  const { setAuthenticated } = useContext(AuthContext);
-  const { setUser } = useContext(AuthContext);
-  const handleLogin = async () => {
-    try {
-      let user = await authenticateUser(username, password);
-      if (user == null) {
-        Alert.alert(
-          "Erreur de connexion",
-          "Le nom d'utilisateur ou le mot de passe est incorrect."
-        );
-      } else {
-        setAuthenticated(true);
-        setUser(user);
-        Alert.alert(
-          "Connexion réussie",
-          `Vous êtes maintenant connecté(e) en tant que ${user.prenom}.`
-        );
-      }
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Erreur de connexion", "Impossible de se connecter.");
-    }
-  };
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const resetPassword = () => {
-    navigation.navigate("AskMail");
-  };
-  const navigation = useNavigation();
-  const signUp = () => {
-    navigation.navigate("RegForm");
+  const handleEditPassword = async () => {
+    if (password !== confirmPassword) {
+      alert("Les mots de passe ne correspondent pas.");
+      return;
+    } else {
+      try {
+        await editCompte(
+          compte.id,
+          compte.mail,
+          compte.nom,
+          compte.prenom,
+
+          password
+        );
+        alert("Mot de passe modifié ! Vous pouvez maintenant vous connecter");
+        navigation.navigate("AuthForm");
+      } catch (error) {
+        alert("Impossible de modifier le mot de passe : " + error.message);
+      }
+    }
   };
   return (
     <View style={styles.container}>
       <Image style={styles.formImage} source={require("../assets/logo.png")} />
 
-      <Text style={styles.header}>Se connecter</Text>
-      <Text style={styles.subheader}>Entrez votre adresse mail</Text>
-      <View style={styles.container2}>
-        <Image
-          style={styles.inputIcon}
-          source={{
-            uri: "https://img.icons8.com/external-dreamstale-lineal-dreamstale/32/null/external-at-mail-dreamstale-lineal-dreamstale.png",
-          }}
-        />
-        <TextInput
-          style={styles.inputText}
-          placeholder="Email"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          secureTextEntry={false}
-          onChangeText={setUsername}
-        />
-      </View>
-      <Text style={styles.subheader}>Entrez votre mot de passe</Text>
+      <Text style={styles.subheader}>Entrez un mot de passe</Text>
       <View style={styles.container2}>
         <Image
           style={styles.inputIcon}
@@ -80,42 +57,40 @@ export const AuthFormScreen = () => {
         <TextInput
           style={styles.inputText}
           placeholder="Mot de passe"
+          keyboardType="password"
           autoCapitalize="none"
           secureTextEntry={true}
           onChangeText={setPassword}
         />
       </View>
-      {/*<Input
-        placeholder="Email"
-        imageUrl="https://img.icons8.com/external-dreamstale-lineal-dreamstale/32/null/external-at-mail-dreamstale-lineal-dreamstale.png"
-        hideCharacters={false}
-        onChangeText={setUsername}
-      />*/}
-
-      {/*<Input
-        placeholder="Mot de passe"
-        imageUrl="https://img.icons8.com/ios/50/null/password1--v1.png"
-        hideCharacters={true}
-        onChangeText={setPassword}
-    />*/}
+      <Text style={styles.subheader}>Confirmez le mot de passe</Text>
+      <View style={styles.container2}>
+        <Image
+          style={styles.inputIcon}
+          source={{
+            uri: "https://img.icons8.com/ios/50/null/password1--v1.png",
+          }}
+        />
+        <TextInput
+          style={styles.inputText}
+          placeholder="Confirmation mot de passe"
+          keyboardType="password"
+          autoCapitalize="none"
+          secureTextEntry={true}
+          onChangeText={setConfirmPassword}
+        />
+      </View>
       <TouchableOpacity
         style={[styles.buttonContainer, styles.signInButton]}
-        onPress={handleLogin}
+        onPress={handleEditPassword}
       >
-        <Text style={styles.loginText}>Se connecter</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.buttonContainer} onPress={resetPassword}>
-        <Text>Mot de passe oublié ?</Text>
-      </TouchableOpacity>
-      <Text style={styles.notRegistered}>Vous n'avez pas de compte ?</Text>
-      <TouchableOpacity style={styles.buttonContainer} onPress={signUp}>
-        <Text style={styles.register}>Inscrivez-vous</Text>
+        <Text style={styles.loginText}>Enregistrer</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-export default AuthFormScreen;
+export default EditPasswordScreen;
 
 const styles = StyleSheet.create({
   container: {

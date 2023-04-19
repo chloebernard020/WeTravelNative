@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Text,
   View,
@@ -8,122 +8,294 @@ import {
   TouchableOpacity,
   ImageBackground,
   Image,
+  Alert,
 } from "react-native";
+
 import fetchcomptes from "../api/compteapi.js";
 import { useContext } from "react";
 import { fetchFavorisParCompte } from "../api/favorisapi";
+import { fetchCompte } from "../api/compteapi";
 import { fetchLieu } from "../api/lieuxapi";
-import { fetchAmitiesParCompte } from "../api/amitieapi";
+import {
+  fetchAppreciationsParCompte,
+  removeAppreciation,
+} from "../api/appreciationapi";
+
+import { fetchAmities, addAmitie } from "../api/amitieapi";
+import { fetchDemandes, removeDemande } from "../api/demandeapi";
 import AuthContext from "../AuthContext";
 import { fetchVisitesParCompte } from "../api/visiteapi";
+import ScrollFriends from "../components/ScrollFriends.js";
+import Demande from "../components/Demande.js";
+import ButtonAddFriends from "../components/ButtonAddFriends.js";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const ProfileScreen = ({ navigation }) => {
   const { user, setAuthenticated } = useContext(AuthContext);
+  const [compte, setCompte] = useState();
+  const [demandes, setDemandes] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [visits, setVisits] = useState([]); // initialisation du state pour les visites
   const [visitedPlaces, setVisitedPlaces] = useState([]);
   const [lieux, setLieux] = useState([]);
   const [amis, setAmis] = useState([]);
+  const [appreciations, setAppreciations] = useState([]);
+  const [comptesDemandeurs, setComptesDemandeurs] = useState([]);
 
   useEffect(() => {
-    const loadAmities = async () => {
-      const amitiesData = await fetchAmitiesParCompte(user.id); // appel à votre fonction d'appel API
-      setVisits(amitiesData); // mise à jour du state avec les données récupérées depuis l'API
+    const fetchData = async () => {
+      const profile = await fetchCompte(user.id);
+      setCompte(profile);
     };
+    fetchData();
+  }, [compte]);
+  useEffect(() => {
+    const loadDemandes = async () => {
+      const demandesData = await fetchDemandes(); // appel à votre fonction d'appel API
+      const newDemandes = [];
+      demandesData.forEach(async (demande) => {
+        if (demande.compteReceveurId === user.id) {
+          newDemandes.push(demande);
+        }
+      });
+      setDemandes(newDemandes); // mise à jour du state avec les données récupérées depuis l'API
+    };
+    loadDemandes();
+    const interval = setInterval(() => {
+      loadDemandes();
+    }, 2000);
+
+    // Nettoyage de l'intervalle lorsque le composant est démonté
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const loadComptes = async () => {
+      const newComptes = await Promise.all(
+        demandes.map((demande) => fetchCompte(demande.compteDemandeurId))
+      );
+      setComptesDemandeurs(newComptes);
+    };
+    loadComptes();
+  }, [demandes]);
+  const loadAmities = async () => {
+    const amitiesData = await fetchAmities(); // appel à votre fonction d'appel API
+    const newFriends = [];
+    amitiesData.forEach(async (amitie) => {
+      if (amitie.compte1Id === user.id || amitie.compte2Id === user.id) {
+        const otherId =
+          amitie.compte1Id === user.id ? amitie.compte2Id : amitie.compte1Id;
+        const otherCompte = await fetchCompte(otherId); // appel à une fonction pour récupérer les infos du compte associé
+        const friend = {
+          id: otherCompte.id,
+          nom: otherCompte.nom,
+          prenom: otherCompte.prenom,
+          adresse: otherCompte.adresse,
+        };
+        newFriends.push(friend);
+      }
+    });
+    setAmis(newFriends); // mise à jour du state avec les données récupérées depuis l'API
+  };
+  useEffect(() => {
     loadAmities();
   }, []);
 
-  useEffect(() => {
-    const loadVisits = async () => {
-      const visitsData = await fetchVisitesParCompte(user.id); // appel à votre fonction d'appel API
-      setVisits(visitsData); // mise à jour du state avec les données récupérées depuis l'API
-    };
-    loadVisits();
+  const fetchData = useCallback(async () => {
+    const userData = await fetchCompte(user.id);
+    setCompte(userData);
+
+    const visitsData = await fetchVisitesParCompte(userData.id);
+    setVisits(visitsData);
+
+    const appreciationsData = await fetchAppreciationsParCompte(userData.id);
+    setAppreciations(appreciationsData);
+
+    const favoritesData = await fetchFavorisParCompte(userData.id);
+    setFavorites(favoritesData);
+
+    const newLieux = await Promise.all(
+      favoritesData.map((favori) => fetchLieu(favori.lieuId))
+    );
+    setLieux(newLieux);
+
+    const newVisitedPlaces = newLieux.filter((lieu) =>
+      visitsData.some((visit) => visit.lieuId === lieu.id)
+    );
+    setVisitedPlaces(newVisitedPlaces);
   }, []);
 
   useEffect(() => {
-    const getFavorites = async () => {
-      if (user) {
-        const newFavorites = await fetchFavorisParCompte(user.id);
-        setFavorites(newFavorites);
-      }
-    };
-    getFavorites();
-  }, [user, favorites]);
-
-  useEffect(() => {
-    const loadLieux = async () => {
-      const newLieux = await Promise.all(
-        favorites.map((favori) => fetchLieu(favori.lieuId))
-      );
-      setLieux(newLieux);
-    };
-    loadLieux();
-  }, [favorites]);
-
-  useEffect(() => {
-    const newVisitedPlaces = [];
-
-    lieux.forEach((lieu) => {
-      const isVisited = visits.some((visit) => visit.lieuId === lieu.id);
-      if (isVisited) {
-        newVisitedPlaces.push(lieu);
-      }
-    });
-
-    setVisitedPlaces(newVisitedPlaces);
-  }, [lieux, visits]);
+    fetchData();
+  }, [fetchData]);
 
   const handleLogout = () => {
     setAuthenticated(false);
   };
+
+  const handleAcceptFriend = async (demande) => {
+    await addAmitie(user.id, demande.compteDemandeurId);
+    await removeDemande(demande.id);
+    setDemandes((prevDemandes) =>
+      prevDemandes.filter((prevDemande) => prevDemande.id !== demande.id)
+    );
+    await loadAmities();
+  };
+
+  const handleDeclineFriend = async (demande) => {
+    await removeDemande(demande.id);
+    setDemandes((prevDemandes) =>
+      prevDemandes.filter((prevDemande) => prevDemande.id !== demande.id)
+    );
+    await loadAmities();
+  };
+
+  const [showBox, setShowBox] = useState(true);
+  const showConfirmDialog = (id) => {
+    return Alert.alert(
+      "Êtes-vous sûr(e) ?",
+      "Êtes-vous sûr(e) de vouloir supprimer votre appréciation ?",
+      [
+        // Le bouton Oui
+        {
+          text: "Oui",
+          onPress: () => {
+            handleDeleteAppreciation(id);
+          },
+        },
+        // Le bouton Non
+        // Ne fait rien mais enlève le message
+        {
+          text: "Non",
+        },
+      ]
+    );
+  };
+  const handleDeleteAppreciation = async (id) => {
+    setShowBox(false);
+    await removeAppreciation(id);
+    setAppreciations((prevAppreciations) =>
+      prevAppreciations.filter((a) => a.id !== id)
+    );
+  };
+
   return (
     <ScrollView>
-      <View style={styles.container}>
+      <View style={styles.header}>
         <Image
           style={[styles.circle, styles.circleContainer]}
           source={require("../assets/empire.jpg")}
         />
-
-        <Text style={styles.text}>
-          {user.prenom} {user.nom}
-        </Text>
-
+        {compte && (
+          <Text style={styles.text} key={compte.id}>
+            {compte.prenom} {compte.nom}
+          </Text>
+        )}
         <TouchableOpacity
-          style={[styles.buttonContainer, styles.editButton]}
+          style={[styles.buttonContainer2, styles.editButton]}
           onPress={() => navigation.navigate("EditProfile")}
         >
           <Text style={styles.loginText}>Modifier le profil</Text>
         </TouchableOpacity>
+      </View>
+      <View style={styles.whiteLine} />
+      <View style={{ backgroundColor: "rgba( 224, 222, 238, 1)" }}>
+        <View style={{ backgroundColor: "rgba( 224, 222, 238, 1)" }}>
+          <Text style={styles.text}>Demandes d'ami</Text>
+          <View>
+            {demandes.length === 0 ? (
+              <Text style={styles.aucunText}>
+                Aucune demande d'ami pour le moment
+              </Text>
+            ) : (
+              demandes.map((demande, index) => (
+                <Demande
+                  _key={demande.id - index}
+                  demande={demande}
+                  compteDemandeur={comptesDemandeurs[index]}
+                  onAccept={() => handleAcceptFriend(demande)}
+                  onDecline={() => handleDeclineFriend(demande)}
+                />
+              ))
+            )}
+          </View>
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={styles.text}>Amis</Text>
+            <ButtonAddFriends
+              navigation={navigation}
+              amis={amis}
+              setAmis={setAmis}
+            />
+          </View>
 
-        <Text style={styles.text}>Amis</Text>
+          <ScrollView horizontal>
+            {amis.length === 0 ? (
+              <Text style={styles.aucunText}>Aucun ami pour le moment</Text>
+            ) : (
+              amis.map((_ami, index) => (
+                <ScrollFriends _key={_ami.id - index} ami={_ami} />
+              ))
+            )}
+          </ScrollView>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <Text style={styles.text}>Les lieux que vous avez adoré</Text>
+            <TouchableOpacity
+              style={styles.buttonAddFriend}
+              onPress={() => navigation.navigate("Favoris")}
+            >
+              <Text style={{ fontSize: 15, color: "rgba(57, 56, 131, 1)" }}>
+                Voir plus
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView horizontal>
+            {visitedPlaces.length === 0 ? (
+              <Text style={styles.aucunText}>Aucun lieu visité</Text>
+            ) : (
+              visitedPlaces.flatMap((place) => (
+                <View key={place.id}>
+                  <View style={styles.scroll}>
+                    <Image style={styles.photo} source={{ uri: place.photo }} />
+                  </View>
+                </View>
+              ))
+            )}
+          </ScrollView>
+          <Text style={styles.text}>Vos appréciations</Text>
+          <ScrollView horizontal>
+            {appreciations.length === 0 ? (
+              <Text>Aucune appréciation pour le moment</Text>
+            ) : (
+              appreciations.map((appreciation) => (
+                <View key={appreciation.id} style={styles.whiteSquare}>
+                  <Text>{appreciation.date}</Text>
 
-        <ScrollView>
-          {amis.map((ami) => (
-            <View key={ami.id} style={styles.circle}>
-              <Image
-                style={styles.photo}
-                source={require("../assets/empire.jpg")}
-              />
-            </View>
-          ))}
-        </ScrollView>
-        <Text style={styles.text}>Les lieux que vous avez adoré</Text>
-        <ScrollView horizontal>
-          {visitedPlaces.flatMap((place) => (
-            <View key={place.id} style={styles.whiteSquare}>
-              <View style={styles.scroll}>
-                <Image style={styles.photo} source={{ uri: place.photo }} />
-              </View>
-            </View>
-          ))}
-        </ScrollView>
-        <TouchableOpacity
-          style={[styles.buttonContainer, styles.editButton]}
-          onPress={handleLogout}
-        >
-          <Text style={styles.loginText}>Se déconnecter</Text>
-        </TouchableOpacity>
+                  <Text>{appreciation.commentaire}</Text>
+                  <TouchableOpacity
+                    style={styles.deleteAppreciationButton}
+                    onPress={() => showConfirmDialog(appreciation.id)}
+                  >
+                    <Text style={styles.deleteAppreciationText}>X</Text>
+                  </TouchableOpacity>
+                </View>
+              ))
+            )}
+          </ScrollView>
+          <TouchableOpacity
+            style={[styles.buttonContainer2, styles.editButton]}
+            onPress={handleLogout}
+          >
+            <Text style={styles.loginText}>Se déconnecter</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );
@@ -131,6 +303,11 @@ const ProfileScreen = ({ navigation }) => {
 
 export default ProfileScreen;
 const styles = StyleSheet.create({
+  header: {
+    backgroundColor: "rgba( 224, 222, 238, 1)",
+    width: 420,
+    alignItems: "center",
+  },
   text: {
     fontSize: 18,
     fontWeight: "bold",
@@ -138,6 +315,49 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     //fontFamily: "ArialRoundedMTBold",
     color: "rgba(57, 56, 131, 1)",
+  },
+  buttonAddFriend: {
+    flexDirection: "row",
+    borderColor: "rgba(57, 56, 131, 1)",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+
+  deleteAppreciationButton: {
+    backgroundColor: "lightgrey",
+    height: 30,
+    width: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    marginVertical: 5,
+
+    borderRadius: 20,
+  },
+
+  deleteAppreciationText: {
+    color: "white",
+  },
+  buttonContainer: {
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 10,
+
+    width: 100,
+    borderRadius: 10,
+  },
+  acceptButton: {
+    backgroundColor: "rgba(86,141,172,1)",
+  },
+  refuseButton: {
+    backgroundColor: "rgb(233,85,85)",
+  },
+  loginText: {
+    color: "white",
+  },
+  aucunText: {
+    color: "gray",
   },
   image: {
     flex: 1,
@@ -180,8 +400,8 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: "center",
+    backgroundColor: "rgba( 224, 222, 238, 1)",
   },
-
   row: {
     flexDirection: "row",
     alignItems: "center",
@@ -192,32 +412,17 @@ const styles = StyleSheet.create({
     color: "white",
   },
 
-  buttonContainer: {
+  buttonContainer2: {
     height: 40,
     justifyContent: "center",
     alignItems: "center",
-
     width: 120,
     borderRadius: 30,
   },
 
   editButton: {
     backgroundColor: "rgba(120,116,172,1)",
-  },
-
-  preferencesContainer: {
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 20,
-    width: 150,
-    borderRadius: 10,
-  },
-  preferencesButton: {
-    backgroundColor: "white",
-  },
-  preferencesText: {
-    color: "rgba(69,82,152,1)",
+    marginBottom: 20,
   },
 
   row2: {
@@ -226,7 +431,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginBottom: 10,
   },
-  loginText: {
-    color: "white",
+
+  whiteSquare: {
+    width: 250,
+    backgroundColor: "rgba(270,270,270,1)",
+    borderRadius: 20,
+    marginVertical: 10,
+    alignItems: "center",
+    shadowColor: "rgba(167,166,169,1)",
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.7,
+    shadowRadius: 10,
+    elevation: 10,
+    marginHorizontal: 15,
   },
 });

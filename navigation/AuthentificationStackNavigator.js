@@ -5,6 +5,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import PlaceScreen from "../screens/PlaceScreen";
 import RegFormScreen from "../screens/RegFormScreen";
 import AuthFormScreen from "../screens/AuthFormScreen";
+import AskMailScreen from "../screens/AskMailScreen";
+import EditPasswordScreen from "../screens/EditPasswordScreen";
 import { NavigationContainer } from "@react-navigation/native";
 
 const AuthentificationStack = createNativeStackNavigator();
@@ -34,6 +36,18 @@ const AuthentificationStackNavigator = () => {
           name="RegForm"
           component={RegFormScreen}
           options={{ title: "Inscription" }}
+        />
+
+        <AuthentificationStack.Screen
+          name="AskMail"
+          component={AskMailScreen}
+          options={{ title: "Votre mail" }}
+        />
+
+        <AuthentificationStack.Screen
+          name="EditPassword"
+          component={EditPasswordScreen}
+          options={{ title: "Modification du mot de passe" }}
         />
       </AuthentificationStack.Navigator>
     </NavigationContainer>

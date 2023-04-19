@@ -119,8 +119,8 @@ const ExploreScreen = ({ navigation }) => {
         <ScrollView>
           <View style={styles.container}>
             <ScrollView horizontal>
-              {randomPlaces.map((place) => (
-                <View style={styles.whiteSquare}>
+              {randomPlaces.map((place, index) => (
+                <View style={styles.whiteSquare} key={`${place.id}-${index}`}>
                   <View style={styles.scroll}>
                     <Image style={styles.photo} source={{ uri: place.photo }} />
                     <Text style={styles.text}>

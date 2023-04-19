@@ -9,11 +9,6 @@ export default function App() {
   const [authenticated, setAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
 
-  const handleLogout = () => {
-    // appel à l'API de déconnexion
-    // si la déconnexion réussit, mettre authenticated à false
-    setAuthenticated(false);
-  };
   return (
     <AuthContext.Provider
       value={{ authenticated, setAuthenticated, user, setUser }}

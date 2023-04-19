@@ -5,8 +5,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import ExploreStackNavigator from "./ExploreStackNavigator";
+import ChatStackNavigator from "./ChatStackNavigator";
 import TravelsStackNavigator from "./TravelsStackNavigator";
-import FavorisStackNavigator from "./FavorisStackNavigator";
 import ProfileStackNavigator from "./ProfileStackNavigator";
 import ProfileScreen from "../screens/ProfileScreen";
 
@@ -28,8 +28,8 @@ const RootTabNavigator = () => {
               iconName = focused ? "globe" : "globe-outline";
             } else if (route.name === "TravelsStackNavigator") {
               iconName = focused ? "airplane" : "airplane-outline";
-            } else if (route.name === "FavorisStackNavigator") {
-              iconName = focused ? "heart" : "heart-outline";
+            } else if (route.name === "ChatStackNavigator") {
+              iconName = focused ? "chatbubble" : "chatbubble-outline";
             } else if (route.name === "ProfileStackNavigator") {
               iconName = focused ? "person" : "person-outline";
             }
@@ -53,9 +53,9 @@ const RootTabNavigator = () => {
           options={{ title: "Mes visites" }}
         />
         <Tab.Screen
-          name="FavorisStackNavigator"
-          component={FavorisStackNavigator}
-          options={{ title: "Mes favoris" }}
+          name="ChatStackNavigator"
+          component={ChatStackNavigator}
+          options={{ title: "Chats" }}
         />
         <Tab.Screen
           name="ProfileStackNavigator"

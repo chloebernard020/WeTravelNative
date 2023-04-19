@@ -33,6 +33,28 @@ export const addVisite = async (user, place, datevisite) => {
   }
 };
 
+export const editVisite = async (_id, _lieuId, _compteId, _date) => {
+  try {
+    const response = await fetch(`${rootEndpoint}/VisiteApi/${_id}`, {
+      method: `PUT`,
+      headers: {
+        Accept: `application/json`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: _id,
+        compteId: _compteId,
+        date: _date,
+        lieuId: _lieuId,
+      }),
+    });
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
 export const removeVisite = async (id) => {
   try {
     const response = await fetch(`${rootEndpoint}/VisiteApi/${id}`, {

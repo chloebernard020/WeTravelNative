@@ -51,7 +51,7 @@ const AllPlacesScreen = ({ navigation }) => {
       </View>
       <ScrollView>
         {places.map((place) => (
-          <View>
+          <View key={place.id}>
             <View style={styles.mainContainer}>
               <View style={styles.contentContainer}>
                 <View style={styles.headerContainer}>

@@ -13,6 +13,19 @@ export const fetchAppreciationsParLieu = async (id) => {
   }
 };
 
+export const fetchAppreciationsParCompte = async (id) => {
+  try {
+    const response = await fetch(
+      `${rootEndpoint}/AppreciationApi/parcompte/${id}`
+    );
+    const appreciations = await response.json();
+    return appreciations;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Impossible de charger les appréciations.");
+  }
+};
+
 export const addAppreciation = async (user, place, _date, _commentaire) => {
   try {
     const response = await fetch(`${rootEndpoint}/AppreciationApi`, {

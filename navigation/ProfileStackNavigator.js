@@ -3,6 +3,8 @@ import { StyleSheet } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ProfileScreen from "../screens/ProfileScreen";
 import EditProfileScreen from "../screens/EditProfileScreen";
+import AddFriendsScreen from "../screens/AddFriendsScreen";
+import FavorisScreen from "../screens/FavorisScreen";
 //import { screenOptions } from "../theme/styles";
 
 // Screen stack for home tab
@@ -34,6 +36,13 @@ const ProfileStackNavigator = () => {
         component={EditProfileScreen}
         options={{ title: "Modification du profil" }}
       />
+      <ProfileStack.Screen
+        name="AddFriends"
+        component={AddFriendsScreen}
+        options={{ title: "Ajouter des amis" }}
+      />
+
+      <ProfileStack.Screen name="Favoris" component={FavorisScreen} />
     </ProfileStack.Navigator>
   );
 };

@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TravelsScreen from "../screens/TravelsScreen";
 import VisitDetailsScreen from "../screens/VisitDetailsScreen";
+import EditVisitScreen from "../screens/EditVisitScreen";
 //import { screenOptions } from "../theme/styles";
 
 // Screen stack for home tab
@@ -33,6 +34,11 @@ const TravelsStackNavigator = () => {
         name="VisitDetails"
         component={VisitDetailsScreen}
         options={{ title: "Détails" }}
+      />
+      <TravelsStack.Screen
+        name="EditVisit"
+        component={EditVisitScreen}
+        options={{ title: "Modification de la visite" }}
       />
     </TravelsStack.Navigator>
   );

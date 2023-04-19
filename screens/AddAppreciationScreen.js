@@ -10,13 +10,12 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import DateTimePicker from "@react-native-community/datetimepicker";
-import Ionicons from "react-native-vector-icons/Ionicons";
-
+import { useNavigation } from "@react-navigation/native";
 import { addAppreciation } from "../api/appreciationapi";
 import AuthContext from "../AuthContext";
 
-const AddAppreciationScreen = ({ route, navigation }) => {
+const AddAppreciationScreen = ({ route }) => {
+  const navigation = useNavigation();
   const { place } = route.params;
   const { user } = useContext(AuthContext);
 
@@ -31,7 +30,7 @@ const AddAppreciationScreen = ({ route, navigation }) => {
     if (text != "") {
       try {
         await addAppreciation(user, place, today, text);
-        navigation.navigate("Travels");
+        navigation.navigate("Place", { place });
       } catch (error) {
         console.error(error);
       }

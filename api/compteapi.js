@@ -34,19 +34,38 @@ export const addCompte = async (_nom, _prenom, _mail, _password) => {
   }
 };
 
-/*const fetchCompte = async (idCompte) => {
+export const editCompte = async (_id, _mail, _nom, _prenom, _mdp) => {
   try {
-    const comptes = await fetchComptes();
-    return (
-      // Search for the first user matching login and password
-      comptes.find((u) => u.mail === mail && u.motDePasse === motDePasse) ||
-      null
-    );
+    const response = await fetch(`${rootEndpoint}/CompteApi/${_id}`, {
+      method: `PUT`,
+      headers: {
+        Accept: `application/json`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: _id,
+        mail: _mail,
+        nom: _nom,
+        prenom: _prenom,
+        mail: _mail,
+        motDePasse: _mdp,
+      }),
+    });
   } catch (error) {
     console.error(error);
-    throw error;
   }
-};*/
+};
+
+export const fetchCompte = async (id) => {
+  try {
+    const response = await fetch(`${rootEndpoint}/CompteApi/${id}`);
+    const compte = await response.json();
+    return compte;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Impossible de charger le compte.");
+  }
+};
 
 export const authenticateUser = async (mail, motdepasse) => {
   const comptes = await fetchComptes();
@@ -54,4 +73,19 @@ export const authenticateUser = async (mail, motdepasse) => {
     (u) => u.mail === mail && u.motDePasse === motdepasse
   );
   return user ? user : null;
+};
+
+export const removeCompte = async (id) => {
+  try {
+    const response = await fetch(`${rootEndpoint}/CompteApi/${id}`, {
+      method: `DELETE`,
+      headers: {
+        Accept: `application/json`,
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 };

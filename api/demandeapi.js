@@ -1,40 +1,39 @@
 const rootEndpoint = "https://enscwetravel.azurewebsites.net/api";
 
-export const fetchAmities = async () => {
+export const fetchDemandes = async () => {
   try {
-    const response = await fetch(`${rootEndpoint}/AmitieApi`);
-    const amitie = await response.json();
-    return amitie;
+    const response = await fetch(`${rootEndpoint}/DemandeApi`);
+    const demande = await response.json();
+    return demande;
   } catch (error) {
     console.error(error);
-    throw new Error("Impossible de charger les amitiés.");
+    throw new Error("Impossible de charger les demandes.");
   }
 };
-
-export const addAmitie = async (user1Id, user2Id) => {
+export const addDemande = async (user1, user2) => {
   try {
-    const response = await fetch(`${rootEndpoint}/AmitieApi`, {
+    const response = await fetch(`${rootEndpoint}/DemandeApi`, {
       method: `POST`,
       headers: {
         Accept: `application/json`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        compte1Id: user1Id,
-        compte2Id: user2Id,
+        compteDemandeurId: user1.id,
+        compteReceveurId: user2.id,
       }),
     });
-    const amitie = await response.json();
-    return amitie;
+    const demande = await response.json();
+    return demande;
   } catch (error) {
     console.error(error);
     throw error;
   }
 };
 
-export const removeAmitie = async (id) => {
+export const removeDemande = async (id) => {
   try {
-    const response = await fetch(`${rootEndpoint}/AmitieApi/${id}`, {
+    const response = await fetch(`${rootEndpoint}/DemandeApi/${id}`, {
       method: `DELETE`,
       headers: {
         Accept: `application/json`,
