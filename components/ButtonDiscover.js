@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 // This component has two props: "name" and "age"
 export const ButtonDiscover = ({ navigation }) => {
   return (

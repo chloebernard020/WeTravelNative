@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View, TextInput, Image } from "react-native";
+import { StyleSheet, View, TextInput, Image } from "react-native";
 
 // This component has two props: "name" and "age"
 export const Input = ({

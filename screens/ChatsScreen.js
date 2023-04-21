@@ -1,27 +1,29 @@
 import React, { useState, useEffect, useContext } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-} from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+
 import { fetchConversations } from "../api/conversationapi";
 import { fetchCompte } from "../api/compteapi";
+
 import AuthContext from "../AuthContext";
 
+import Conversation from "../components/Conversation";
+
 const ChatsScreen = ({ navigation }) => {
+  // Récupération du contexte user
   const { user } = useContext(AuthContext);
+
+  //Initilisation de la variable conversations et amis
   const [conversations, setConversations] = useState([]);
   const [amis, setAmis] = useState([]);
 
+  // Fonction permettant la récupération des conversations
   const loadConversations = async () => {
     try {
       const conversationsData = await fetchConversations();
       const newConversations = [];
       const newFriends = [];
 
+      // On récupère les conversations qui concernent l'utilisateur
       for (const conversation of conversationsData) {
         if (
           conversation.compte1Id === user.id ||
@@ -29,24 +31,27 @@ const ChatsScreen = ({ navigation }) => {
         ) {
           newConversations.push(conversation);
 
+          // Et on définit l'autre compte en regardant les identifiants des deux comptes rattachés à la conversation
           const otherId =
             conversation.compte1Id === user.id
               ? conversation.compte2Id
               : conversation.compte1Id;
 
+          // Récupération du compte ami
           const otherCompte = await fetchCompte(otherId);
 
+          // On définit un objet avec toutes les informations du compte sauf le mot de passe
           const friend = {
             id: otherCompte.id,
             nom: otherCompte.nom,
             prenom: otherCompte.prenom,
-            adresse: otherCompte.adresse,
+            mail: otherCompte.mail,
           };
 
           newFriends.push(friend);
         }
       }
-
+      // Mise à jour du state
       setConversations(newConversations);
       setAmis(newFriends);
     } catch (error) {
@@ -54,6 +59,7 @@ const ChatsScreen = ({ navigation }) => {
     }
   };
 
+  // useEffect permettant d'exécuter la fonction, on actualise toutes les 5 secondes au cas ou une conversation a été créée entre temps
   useEffect(() => {
     loadConversations();
     const interval = setInterval(() => {
@@ -76,27 +82,12 @@ const ChatsScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
       {conversations.map((conversation) => (
-        <TouchableOpacity
+        <Conversation
           key={conversation.id}
-          style={styles.conversationItem}
-          onPress={() =>
-            navigation.navigate("Conversation", { conversation, amis })
-          }
-        >
-          <Text style={styles.conversationName}>
-            {amis.find(
-              (v) =>
-                v.id === conversation.compte1Id ||
-                v.id === conversation.compte2Id
-            )?.nom || ""}{" "}
-            {amis.find(
-              (v) =>
-                v.id === conversation.compte1Id ||
-                v.id === conversation.compte2Id
-            )?.prenom || ""}
-          </Text>
-          <Ionicons name="chevron-forward" style={styles.arrow}></Ionicons>
-        </TouchableOpacity>
+          amis={amis}
+          conversation={conversation}
+          navigation={navigation}
+        />
       ))}
     </View>
   );
@@ -110,18 +101,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
 
-  arrow: {
-    fontSize: 30,
-    color: "grey",
-  },
-
-  conversationItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E5E5",
-  },
   header: { flexDirection: "row", justifyContent: "space-between" },
 
   title: {
@@ -131,22 +110,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     //fontFamily: "Roboto",
     color: "rgba(57, 56, 131, 1)",
-  },
-  conversationName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    flex: 1,
-  },
-  conversationUnreadBadge: {
-    backgroundColor: "#F24F04",
-    borderRadius: 10,
-    paddingVertical: 2,
-    paddingHorizontal: 8,
-  },
-  conversationUnreadBadgeText: {
-    color: "#FFFFFF",
-    fontSize: 12,
-    fontWeight: "bold",
   },
 
   addButton: {

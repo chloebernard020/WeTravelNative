@@ -2,17 +2,17 @@ import React, { useContext, useState, useEffect } from "react";
 import {
   Text,
   View,
-  Button,
   StyleSheet,
-  ScrollView,
-  Image,
   TextInput,
   TouchableOpacity,
   Alert,
 } from "react-native";
+
 import { fetchCompte } from "../api/compteapi";
 import { editCompte, removeCompte } from "../api/compteapi";
+
 import AuthContext from "../AuthContext";
+
 const EditProfileScreen = ({ navigation }) => {
   const { user, setAuthenticated } = useContext(AuthContext);
   const [compte, setCompte] = useState();
@@ -30,6 +30,7 @@ const EditProfileScreen = ({ navigation }) => {
     fetchData();
   }, [compte]);
 
+  // Je sépare la modification des informations personnelles et la modification de mot de passe pour que ca soit plus simple
   const handleEditCompte = async () => {
     await editCompte(user.id, user.mail, nom, prenom, user.motDePasse);
     alert("Informations modifiées avec succès");
@@ -46,6 +47,7 @@ const EditProfileScreen = ({ navigation }) => {
     }
   };
 
+  // Variable permettant de montrer ou non la fenêtre de dialogue
   const [showBox, setShowBox] = useState(true);
 
   const showConfirmDialog = () => {
@@ -84,22 +86,26 @@ const EditProfileScreen = ({ navigation }) => {
       }}
     >
       <Text style={styles.text}>Modifier vos informations</Text>
-      {compte && (
-        <View>
-          <TextInput
-            style={styles.input}
-            onChangeText={setNom}
-            value={nom}
-            placeholder="Nom"
-          />
-          <TextInput
-            style={styles.input}
-            onChangeText={setPrenom}
-            value={prenom}
-            placeholder="Prenom"
-          />
-        </View>
-      )}
+
+      {
+        /*On vérifie que le compte soit bien récupéré*/
+        compte && (
+          <View>
+            <TextInput
+              style={styles.input}
+              onChangeText={setNom}
+              value={nom}
+              placeholder="Nom"
+            />
+            <TextInput
+              style={styles.input}
+              onChangeText={setPrenom}
+              value={prenom}
+              placeholder="Prenom"
+            />
+          </View>
+        )
+      }
 
       <TouchableOpacity
         style={styles.button}
@@ -146,48 +152,6 @@ const EditProfileScreen = ({ navigation }) => {
 export default EditProfileScreen;
 
 const styles = StyleSheet.create({
-  scroll: {
-    marginRight: 30,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  header: {
-    fontSize: 24,
-    marginTop: 20,
-    //fontFamily: "ArialRoundedMTBold",
-    color: "rgba(57, 56, 131, 1)",
-  },
-  text: {
-    fontSize: 20,
-    marginVertical: 20,
-    fontWeight: "bold",
-    //fontFamily: "ArialMT",
-    color: "rgba(69, 82, 152, 1)",
-  },
-  container: {
-    alignItems: "center",
-  },
-  textButton: {
-    color: "white",
-  },
-  photo: {
-    width: 160,
-    height: 160,
-    marginBottom: 20,
-    borderRadius: 10,
-  },
-  whiteSquare: {
-    height: 300,
-    width: 350,
-    backgroundColor: "rgba(245,245,245,1)",
-    borderRadius: 20,
-    marginBottom: 20,
-    marginTop: 20,
-  },
-
-  lignehorizontal: {
-    color: "white",
-  },
   input: {
     width: 300,
     height: 40,
@@ -204,6 +168,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+
+  textButton: {
+    color: "white",
+  },
+
+  text: {
+    fontSize: 20,
+    marginVertical: 20,
+    fontWeight: "bold",
+    color: "rgba(69, 82, 152, 1)",
+  },
+
   buttonDeleteContainer: {
     height: 40,
     justifyContent: "center",

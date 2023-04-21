@@ -2,16 +2,13 @@ import React, { useState, useEffect, useCallback } from "react";
 import {
   Text,
   View,
-  Button,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  ImageBackground,
   Image,
   Alert,
 } from "react-native";
 
-import fetchcomptes from "../api/compteapi.js";
 import { useContext } from "react";
 import { fetchFavorisParCompte } from "../api/favorisapi";
 import { fetchCompte } from "../api/compteapi";
@@ -28,7 +25,6 @@ import { fetchVisitesParCompte } from "../api/visiteapi";
 import ScrollFriends from "../components/ScrollFriends.js";
 import Demande from "../components/Demande.js";
 import ButtonAddFriends from "../components/ButtonAddFriends.js";
-import Ionicons from "react-native-vector-icons/Ionicons";
 
 const ProfileScreen = ({ navigation }) => {
   const { user, setAuthenticated } = useContext(AuthContext);

@@ -9,6 +9,8 @@ import {
 import AuthContext from "../AuthContext";
 import { fetchMessages, addMessage } from "../api/messageapi";
 
+import Message from "../components/Message";
+
 const ConversationScreen = ({ route }) => {
   const { conversation } = route.params;
   const { user } = useContext(AuthContext);
@@ -55,28 +57,7 @@ const ConversationScreen = ({ route }) => {
       </Text>
 
       {messages.map((message) => (
-        <View
-          key={message.id}
-          style={[
-            message.compteEnvoyeurId === user.id
-              ? styles.messageSent
-              : styles.messageReceived,
-            message.compteEnvoyeurId === user.id && {
-              backgroundColor: "rgb(101,124,159)",
-              fontColor: "white",
-            },
-          ]}
-        >
-          <Text
-            style={[
-              message.compteEnvoyeurId === user.id && {
-                color: "white",
-              },
-            ]}
-          >
-            {message.mess}
-          </Text>
-        </View>
+        <Message key={message.id} message={message} user={user} />
       ))}
       <View style={styles.inputContainer}>
         <TextInput
@@ -99,48 +80,14 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 16,
   },
+
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 16,
     color: "rgba(57, 56, 131, 1)",
   },
-  chat: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#CCCCCC",
-  },
-  chatName: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginRight: 16,
-  },
-  chatMessage: {
-    fontSize: 16,
-    color: "#666666",
-  },
-  messageReceived: {
-    alignSelf: "flex-start",
-    backgroundColor: "#F2F2F2",
-    borderRadius: 16,
-    padding: 8,
-    marginBottom: 8,
-    maxWidth: "80%",
-  },
-  messageSent: {
-    alignSelf: "flex-end",
-    backgroundColor: "#DCF8C6",
-    borderRadius: 16,
-    padding: 8,
-    marginBottom: 8,
-    maxWidth: "80%",
-  },
-  message: {
-    fontSize: 16,
-    color: "#333333",
-  },
+
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -150,6 +97,7 @@ const styles = StyleSheet.create({
     right: 0,
     marginBottom: 5,
   },
+
   input: {
     flex: 1,
     borderWidth: 1,
@@ -159,12 +107,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginRight: 8,
   },
+
   button: {
     backgroundColor: "rgb(101,124,159)",
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 16,
   },
+
   buttonText: {
     color: "#FFFFFF",
     fontWeight: "bold",

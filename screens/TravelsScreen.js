@@ -2,11 +2,9 @@ import { React, useEffect, useState, useContext } from "react";
 import {
   Text,
   View,
-  Button,
   StyleSheet,
   ScrollView,
   Image,
-  TextInput,
   TouchableOpacity,
   Alert,
 } from "react-native";
@@ -14,15 +12,12 @@ import {
 import { fetchVisitesParCompte, removeVisite } from "../api/visiteapi";
 import { fetchLieu } from "../api/lieuxapi";
 import { fetchVille } from "../api/villeapi";
+
 import AuthContext from "../AuthContext";
+
 const TravelsScreen = ({ navigation }) => {
   const { user } = useContext(AuthContext);
   const [visites, setVisites] = useState([]); // initialisation du state pour les visites
-  const [searchName, setSearchName] = useState("");
-
-  const handleSearchNameChange = (text) => {
-    setSearchName(text);
-  };
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
@@ -31,6 +26,7 @@ const TravelsScreen = ({ navigation }) => {
     });
     return unsubscribe;
   }, [navigation]);
+
   useEffect(() => {
     const loadVisites = async () => {
       const visitesData = await fetchVisitesParCompte(user.id); // appel à votre fonction d'appel API
@@ -61,6 +57,7 @@ const TravelsScreen = ({ navigation }) => {
     loadVilles();
   }, [visites]);
 
+  // Initialisation de la fenêtre de dialogue
   const [showBox, setShowBox] = useState(true);
 
   const showConfirmDialog = (visiteId) => {
@@ -84,6 +81,7 @@ const TravelsScreen = ({ navigation }) => {
     );
   };
 
+  // Fonction permettant la suppression de la visite lors de l'appui sur le bouton dédié
   const handleDeleteVisit = async (visiteId) => {
     setShowBox(false);
     await removeVisite(visiteId);
@@ -110,7 +108,6 @@ const TravelsScreen = ({ navigation }) => {
                   {lieux.find((v) => v.id === visite.lieuId)?.nom || ""},{" "}
                   {villes.find((v) => v.id === visite.lieuId)?.nom || ""}
                 </Text>
-                {/*<Image style={styles.photo} source={{ uri: visite.photo }} />*/}
                 <Text style={styles.headdescription}>Date : {visite.date}</Text>
                 <View style={styles.row}>
                   <View style={[styles.buttonContainer, styles.editButton]}>
@@ -146,38 +143,61 @@ const TravelsScreen = ({ navigation }) => {
 export default TravelsScreen;
 
 const styles = StyleSheet.create({
-  scroll: {
-    marginRight: 30,
+  container: {
     alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: "rgba( 239, 239, 250, 1)",
+    height: 800,
   },
-  row: { flexDirection: "row", justifyContent: "space-between" },
 
-  deleteButtonContainer: {
-    marginTop: 10,
-    alignSelf: "flex-start",
-  },
   header: {
     fontSize: 24,
     marginTop: 10,
     fontWeight: "bold",
-    //fontFamily: "ArialRoundedMTBold",
     color: "rgba(57, 56, 131, 1)",
+  },
+
+  whiteLine: {
+    height: 2,
+    marginTop: 5,
+    marginBottom: 5,
+    width: 380,
+    backgroundColor: "white",
   },
 
   subheader: {
     fontSize: 18,
     marginTop: 5,
-    //fontFamily: "ArialRoundedMTBold",
     color: "rgba(57, 56, 131, 1)",
   },
-  description: {
+
+  headdescription: {
     fontSize: 14,
-    marginLeft: 15,
-    marginRight: 15,
-    marginBottom: 15,
-    //fontFamily: "ArialMT",
-    color: "rgba(69, 82, 152, 1)",
+    marginTop: 5,
+    color: "rgba(57, 56, 131, 1)",
+  },
+
+  row: { flexDirection: "row", justifyContent: "space-between" },
+
+  buttonContainer: {
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 10,
+    marginRight: 10,
+    width: 100,
+    borderRadius: 10,
+  },
+
+  editButton: {
+    backgroundColor: "rgba(86,141,172,1)",
+  },
+
+  deleteButton: {
+    backgroundColor: "rgb(233,85,85)",
+  },
+
+  loginText: {
+    color: "white",
   },
 
   white: {
@@ -190,89 +210,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
 
-  appreciation: {
-    fontSize: 14,
-    marginRight: 15,
-    marginBottom: 10,
-    //fontFamily: "ArialMT",
-    color: "rgba(69, 82, 152, 1)",
-    alignItems: "center",
-  },
-
-  headdescription: {
-    fontSize: 14,
-    marginTop: 5,
-    //fontFamily: "ArialMT",
-    color: "rgba(57, 56, 131, 1)",
-  },
-
-  container: {
-    alignItems: "center",
-    backgroundColor: "rgba( 239, 239, 250, 1)",
-    height: 800,
-  },
-  containerResearch: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 10,
-    backgroundColor: "#fff",
-    height: 50,
-    width: 380,
-    shadowColor: "rgba(270,270,270,1)",
-    borderRadius: 20,
-    marginVertical: 10,
-    marginLeft: 5,
-    //borderWidth: 1,
-    //borderColor: "#ccc",
-  },
-
-  research: {
-    flex: 1,
-    paddingVertical: 10,
-    paddingLeft: 5,
-    fontSize: 16,
-    color: "#000",
-  },
-
   photo: {
     width: 120,
     height: 120,
     marginVertical: 10,
     marginHorizontal: 10,
     borderRadius: 10,
-  },
-  whiteSquare: {
-    height: 300,
-    width: 350,
-    backgroundColor: "rgba(245,245,245,1)",
-    borderRadius: 20,
-    marginBottom: 20,
-    marginTop: 20,
-  },
-  whiteLine: {
-    height: 2,
-    marginTop: 5,
-    marginBottom: 5,
-    width: 380,
-    backgroundColor: "white",
-  },
-  buttonContainer: {
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    marginVertical: 10,
-    marginRight: 10,
-    width: 100,
-    borderRadius: 10,
-  },
-  editButton: {
-    backgroundColor: "rgba(86,141,172,1)",
-  },
-  deleteButton: {
-    backgroundColor: "rgb(233,85,85)",
-  },
-  loginText: {
-    color: "white",
   },
 });

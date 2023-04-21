@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-  Alert,
   StyleSheet,
   Text,
   View,
@@ -9,23 +8,26 @@ import {
   ScrollView,
   TextInput,
 } from "react-native";
-import { Input } from "../components/Input";
-import { addCompte } from "../api/compteapi";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { fetchComptes } from "../api/compteapi";
+
+import { addCompte, fetchComptes } from "../api/compteapi";
+import Input from "../components/Input";
+
 export const RegFormScreen = ({ navigation }) => {
+  // On initialise les informations rentrées par l'utilisateur
   const [mail, setMail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
 
+  // Fonction permettant l'inscription
   const register = async () => {
+    // On vérifie que le mot de passe et la confirmation sont identiques
     if (password !== confirmPassword) {
       alert("Les mots de passe ne correspondent pas.");
       return;
     } else {
+      // Si c'est le cas on ajoute le compte créé à l'API
       try {
         const comptes = await fetchComptes();
         const emailExists = comptes.some((compte) => compte.mail === mail);
@@ -43,9 +45,11 @@ export const RegFormScreen = ({ navigation }) => {
       }
     }
   };
+
   const signIn = () => {
     navigation.navigate("AuthForm");
   };
+
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -126,6 +130,30 @@ export const RegFormScreen = ({ navigation }) => {
 };
 export default RegFormScreen;
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba( 224, 222, 238, 1)",
+  },
+
+  formImage: {
+    width: 100,
+    height: 100,
+    marginBottom: 20,
+  },
+
+  header: {
+    fontSize: 28,
+    marginBottom: 20,
+    color: "rgba(57, 56, 131, 1)",
+  },
+  subheader: {
+    fontSize: 15,
+    marginBottom: 5,
+    color: "rgba(69, 82, 152, 1)",
+  },
+
   container2: {
     borderBottomColor: "#F5FCFF",
     backgroundColor: "white",
@@ -137,29 +165,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  inputText: {
-    height: 45,
-    marginLeft: 16,
-    borderBottomColor: "#FFFFFF",
-    flex: 1,
-  },
+
   inputIcon: {
     width: 30,
     height: 30,
     marginLeft: 15,
     justifyContent: "center",
   },
-  container: {
+
+  inputText: {
+    height: 45,
+    marginLeft: 16,
+    borderBottomColor: "#FFFFFF",
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba( 224, 222, 238, 1)",
   },
-  formImage: {
-    width: 100,
-    height: 100,
-    marginBottom: 20,
-  },
+
   buttonContainer: {
     height: 40,
     justifyContent: "center",
@@ -168,33 +188,23 @@ const styles = StyleSheet.create({
     width: 250,
     borderRadius: 30,
   },
+
   signInButton: {
     backgroundColor: "rgba(120,116,172,1)",
   },
+
   loginText: {
     color: "white",
   },
-  header: {
-    fontSize: 28,
-    marginBottom: 20,
-    //fontFamily: "ArialRoundedMTBold",
-    color: "rgba(57, 56, 131, 1)",
-  },
-  subheader: {
-    fontSize: 15,
-    marginBottom: 5,
-    //fontFamily: "ArialMT",
-    color: "rgba(69, 82, 152, 1)",
-  },
+
   notRegistered: {
     fontSize: 14,
-    //fontFamily: "ArialMT",
     color: "rgba(146, 128, 154, 1)",
     marginBottom: 4,
   },
+
   register: {
     fontSize: 20,
-    //fontFamily: "ArialRoundedMTBold",
     color: "rgba(186, 104, 163, 1)",
     fontWeight: "bold",
     marginBottom: 4,

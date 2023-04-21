@@ -2,39 +2,29 @@ import { React, useEffect, useState, useContext } from "react";
 import {
   Text,
   View,
-  Button,
   StyleSheet,
   ScrollView,
-  Image,
-  TextInput,
   TouchableOpacity,
 } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
+
 import { fetchFavorisParCompte } from "../api/favorisapi";
 import { fetchLieu } from "../api/lieuxapi";
-import { fetchVille } from "../api/villeapi";
-import AuthContext from "../AuthContext";
 import { fetchVisitesParCompte } from "../api/visiteapi";
 
-const FavorisScreen = ({ route }) => {
+import AuthContext from "../AuthContext";
+
+import FavoriteCard from "../components/FavoriteCard";
+
+const FavorisScreen = () => {
   const { user } = useContext(AuthContext);
   const [favorites, setFavorites] = useState([]);
   const [visits, setVisits] = useState([]); // initialisation du state pour les visites
   const [visitedPlaces, setVisitedPlaces] = useState([]);
   const [toVisitPlaces, setToVisitPlaces] = useState([]);
-  const [searchName, setSearchName] = useState("");
   const [lieux, setLieux] = useState([]);
   const [activeButton, setActiveButton] = useState("visited");
-  const [filteredPlaces, setFilteredPlaces] = useState([]);
 
-  const handleSearchNameChange = (text) => {
-    setSearchName(text);
-    const filtered = displayedPlaces.filter((place) =>
-      place.nom.toLowerCase().includes(text.toLowerCase())
-    );
-    setFilteredPlaces(filtered);
-  };
-
+  // On récupère tous les lieux visités par l'utilisateur
   useEffect(() => {
     const loadVisits = async () => {
       const visitsData = await fetchVisitesParCompte(user.id); // appel à votre fonction d'appel API
@@ -43,6 +33,7 @@ const FavorisScreen = ({ route }) => {
     loadVisits();
   }, []);
 
+  // On récupère les lieux favoris de l'utilisateur
   useEffect(() => {
     const getFavorites = async () => {
       if (user) {
@@ -53,6 +44,7 @@ const FavorisScreen = ({ route }) => {
     getFavorites();
   }, [user, favorites]);
 
+  // Et on récupère les informations de ces lieux
   useEffect(() => {
     const loadLieux = async () => {
       const newLieux = await Promise.all(
@@ -63,6 +55,7 @@ const FavorisScreen = ({ route }) => {
     loadLieux();
   }, [favorites]);
 
+  // On sépare les lieux visités des lieux non visités et on fait un boucle for permettant de les séparer
   useEffect(() => {
     const newVisitedPlaces = [];
     const newToVisitPlaces = [];
@@ -80,6 +73,7 @@ const FavorisScreen = ({ route }) => {
     setToVisitPlaces(newToVisitPlaces);
   }, [lieux, visits]);
 
+  // On définit un displayedPlaces qui correspond aux lieux affichés selon le bouton sélectionné
   const displayedPlaces =
     activeButton === "visited" ? visitedPlaces : toVisitPlaces;
 
@@ -110,20 +104,7 @@ const FavorisScreen = ({ route }) => {
         </View>
 
         {displayedPlaces.map((place) => (
-          <View key={place.id} style={styles.white}>
-            <Image
-              style={styles.photo}
-              source={{
-                uri: place.photo || "",
-              }}
-            />
-            <View style={{ justifyContent: "center" }}>
-              <Text style={styles.subheader}>{place.nom}</Text>
-              <Text style={styles.description} numberOfLines={3}>
-                {place.description}
-              </Text>
-            </View>
-          </View>
+          <FavoriteCard key={place.id} place={place} />
         ))}
       </View>
     </ScrollView>
@@ -133,11 +114,12 @@ const FavorisScreen = ({ route }) => {
 export default FavorisScreen;
 
 const styles = StyleSheet.create({
-  scroll: {
-    marginRight: 30,
+  container: {
     alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: "rgba( 239, 239, 250, 1)",
+    height: 800,
   },
+
   header: {
     fontSize: 24,
     marginTop: 10,
@@ -170,72 +152,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
 
-  appreciation: {
-    fontSize: 14,
-    marginRight: 15,
-    marginBottom: 10,
-    //fontFamily: "ArialMT",
-    color: "rgba(69, 82, 152, 1)",
-    alignItems: "center",
-  },
-
-  icon: {
-    color: "red",
-
-    marginVertical: 5,
-  },
-
-  headdescription: {
-    fontSize: 18,
-    marginTop: 5,
-    //fontFamily: "ArialMT",
-    color: "rgba(57, 56, 131, 1)",
-  },
-
-  container: {
-    alignItems: "center",
-    backgroundColor: "rgba( 239, 239, 250, 1)",
-    height: 800,
-  },
-  containerResearch: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 10,
-    backgroundColor: "#fff",
-    height: 50,
-    width: 380,
-    shadowColor: "rgba(270,270,270,1)",
-    borderRadius: 20,
-    marginVertical: 10,
-    marginLeft: 5,
-    //borderWidth: 1,
-    //borderColor: "#ccc",
-  },
-
-  research: {
-    flex: 1,
-    paddingVertical: 10,
-    paddingLeft: 5,
-    fontSize: 16,
-    color: "#000",
-  },
-
-  photo: {
-    width: 100,
-    height: 100,
-    marginVertical: 10,
-    marginHorizontal: 10,
-    borderRadius: 10,
-  },
-  whiteSquare: {
-    height: 300,
-    width: 450,
-    backgroundColor: "rgba(245,245,245,1)",
-
-    marginBottom: 20,
-    marginTop: 20,
-  },
   whiteLine: {
     height: 2,
     marginTop: 5,
@@ -243,6 +159,7 @@ const styles = StyleSheet.create({
     width: 380,
     backgroundColor: "white",
   },
+
   buttonContainer: {
     flex: 1,
     height: 50,
@@ -251,23 +168,14 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba( 239, 239, 250, 1)",
     borderColor: "white",
   },
+
   activeButton: {
     backgroundColor: "#fff",
   },
+
   buttonText: {
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",
-  },
-  buttonContainer2: {
-    height: 40,
-    justifyContent: "center",
-    marginTop: 5,
-    alignItems: "center",
-    width: 150,
-    borderRadius: 30,
-  },
-  loginText: {
-    color: "white",
   },
 });

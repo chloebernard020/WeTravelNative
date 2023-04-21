@@ -2,23 +2,22 @@ import { React, useState, useEffect } from "react";
 import {
   Text,
   View,
-  Button,
   StyleSheet,
   ScrollView,
   Image,
   TouchableOpacity,
-  TextInput,
 } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
+
+import ExploreCard from "../components/ExploreCard";
 
 import { fetchLieux } from "../api/lieuxapi";
 import { fetchVille } from "../api/villeapi";
 import { fetchVillesParPays } from "../api/villeapi";
 import { fetchLieuxParVille } from "../api/lieuxapi";
 import { fetchLesPays } from "../api/paysapi";
-import { fetchPays } from "../api/paysapi";
-import PlaceScreen from "./PlaceScreen";
+
 const ExploreScreen = ({ navigation }) => {
+  //Initialisation de la variable représentant les lieux aléatoires sélectionnés dans l'API
   const [randomPlaces, setRandomPlaces] = useState([]);
 
   useEffect(() => {
@@ -26,6 +25,7 @@ const ExploreScreen = ({ navigation }) => {
       const lieux = await fetchLieux();
       const randomPlaces = [];
 
+      // On en sélectionne 3 donc tant que la taille de la liste n'est pas égale à 3 on continue de généré des chiffres aléatoires parmi les lieux de l'API
       while (randomPlaces.length < 3) {
         const randomIndex = Math.floor(Math.random() * lieux.length);
         const randomPlace = lieux[randomIndex];
@@ -38,10 +38,12 @@ const ExploreScreen = ({ navigation }) => {
     selectRandomLieux();
   }, []);
 
+  // Initialisation de la liste des villes
   const [villes, setVilles] = useState(null);
 
   useEffect(() => {
     const loadVilles = async () => {
+      // Pour toutes les villes de la liste, on sélectionne celles qui correspondant aux lieux sélectionnés aléatoirement
       const newVilles = await Promise.all(
         randomPlaces.map((place) => fetchVille(place.villeId))
       );
@@ -50,8 +52,11 @@ const ExploreScreen = ({ navigation }) => {
     loadVilles();
   }, [randomPlaces]);
 
+  // On initialise les pays présents dans l'API et les lieux par pays
   const [pays, setPays] = useState([]);
   const [lieuxParPays, setLieuxParPays] = useState([]);
+
+  // On initialise la variable correspondant au pays aléatoirement choisi dans la base de données
   const [randomPays, setRandomPays] = useState(null);
   useEffect(() => {
     const getPays = async () => {
@@ -60,11 +65,12 @@ const ExploreScreen = ({ navigation }) => {
         setPays(lesPays);
       } catch (error) {
         console.error(error);
-        // Gérer l'erreur ici
       }
     };
     getPays();
   }, []);
+
+  // Fonction permettant la sélection du pays aléatoirement dans la liste
   useEffect(() => {
     const getRandomPays = () => {
       if (pays.length > 0 && !randomPays) {
@@ -76,6 +82,7 @@ const ExploreScreen = ({ navigation }) => {
     getRandomPays();
   }, [pays, randomPays]);
 
+  // On récupère ainsi les lieux ayant comme Pays le pays sélectionné aléatoirement
   useEffect(() => {
     const getLieux = async () => {
       try {
@@ -94,6 +101,7 @@ const ExploreScreen = ({ navigation }) => {
     getLieux();
   }, [randomPays]);
 
+  // Et les villes correspondantes
   const [randomVilles, setRandomVilles] = useState(null);
 
   useEffect(() => {
@@ -120,28 +128,12 @@ const ExploreScreen = ({ navigation }) => {
           <View style={styles.container}>
             <ScrollView horizontal>
               {randomPlaces.map((place, index) => (
-                <View style={styles.whiteSquare} key={`${place.id}-${index}`}>
-                  <View style={styles.scroll}>
-                    <Image style={styles.photo} source={{ uri: place.photo }} />
-                    <Text style={styles.text}>
-                      {place.nom},{" "}
-                      {villes.find((v) => v.id === place.villeId)?.nom || ""}
-                    </Text>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <TouchableOpacity
-                        style={[styles.buttonContainer, styles.signInButton]}
-                        onPress={() => navigation.navigate("Place", { place })}
-                      >
-                        <Text style={styles.loginText}>Découvrir</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View>
+                <ExploreCard
+                  place={place}
+                  navigation={navigation}
+                  villes={villes}
+                  key={`${place.id}-${index}`}
+                />
               ))}
               <View style={styles.whiteSquare2}>
                 <View
@@ -173,25 +165,12 @@ const ExploreScreen = ({ navigation }) => {
             <ScrollView horizontal>
               {lieuxParPays.flatMap((lieux) =>
                 lieux.map((place) => (
-                  <View key={place.id} style={styles.whiteSquare}>
-                    <View style={styles.scroll}>
-                      <Image
-                        style={styles.photo}
-                        source={{ uri: place.photo }}
-                      />
-                      <Text style={styles.text}>
-                        {place.nom},{" "}
-                        {randomVilles.find((v) => v.id === place.villeId)
-                          ?.nom || ""}
-                      </Text>
-                      <TouchableOpacity
-                        style={[styles.buttonContainer, styles.signInButton]}
-                        onPress={() => navigation.navigate("Place", { place })}
-                      >
-                        <Text style={styles.loginText}>Découvrir</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
+                  <ExploreCard
+                    key={place.id}
+                    place={place}
+                    navigation={navigation}
+                    villes={randomVilles}
+                  />
                 ))
               )}
             </ScrollView>
@@ -205,27 +184,9 @@ const ExploreScreen = ({ navigation }) => {
 export default ExploreScreen;
 
 const styles = StyleSheet.create({
-  scroll: {
-    marginRight: 15,
-    marginLeft: 15,
+  page: {
+    backgroundColor: "rgba( 224, 222, 238, 1)",
     alignItems: "center",
-    justifyContent: "center",
-  },
-
-  scroll2: {
-    marginRight: 15,
-    marginLeft: 15,
-    alignContent: "center",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 100,
-  },
-
-  plusinfos: {
-    alignItems: "center",
-
-    color: "rgba(57, 56, 131, 1)",
-    fontSize: 20,
   },
 
   formImage: {
@@ -233,106 +194,18 @@ const styles = StyleSheet.create({
     height: 100,
     marginTop: 40,
   },
-  page: {
-    backgroundColor: "rgba( 224, 222, 238, 1)",
-    alignItems: "center",
-  },
-  header: {
-    fontSize: 18,
-    marginTop: 20,
-    fontWeight: "bold",
-    //fontFamily: "Roboto",
-    color: "rgba(57, 56, 131, 1)",
-  },
 
   header1: {
     fontSize: 28,
     marginTop: 30,
     marginBottom: 20,
     fontWeight: "bold",
-    //fontFamily: "Roboto",
     color: "rgba(57, 56, 131, 1)",
   },
 
-  textLeft: {
-    fontSize: 18,
-    marginTop: 20,
-    marginRight: 20,
-    marginLeft: 20,
-    fontWeight: "bold",
-    //fontFamily: "Roboto",
-    color: "rgba(57, 56, 131, 1)",
-  },
-
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 10,
-  },
-  containerResearch: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 10,
-    backgroundColor: "#fff",
-    height: 50,
-    width: 380,
-    shadowColor: "rgba(270,270,270,1)",
-    borderRadius: 20,
-    marginVertical: 10,
-    marginLeft: 5,
-    //borderWidth: 1,
-    //borderColor: "#ccc",
-  },
-
-  research: {
-    flex: 1,
-    paddingVertical: 10,
-    paddingLeft: 5,
-    fontSize: 16,
-    color: "#000",
-  },
-
-  icon: {
-    width: 20,
-    height: 20,
-    tintColor: "#999",
-  },
-  text: {
-    fontSize: 14,
-    marginBottom: 20,
-    //fontFamily: "ArialMT",
-    color: "rgba(69, 82, 152, 1)",
-  },
   container: {
     backgroundColor: "rgba( 224, 222, 238, 1)",
     alignItems: "center",
-  },
-
-  photo: {
-    width: 170,
-    height: 160,
-    marginTop: 10,
-    marginBottom: 10,
-    borderRadius: 10,
-  },
-  whiteSquare: {
-    height: 300,
-    width: 200,
-    backgroundColor: "rgba(270,270,270,1)",
-    borderRadius: 20,
-    marginBottom: 10,
-    shadowColor: "rgba(167,166,169,1)",
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.7,
-    shadowRadius: 10,
-    elevation: 10,
-    marginRight: 15,
-    marginLeft: 15,
-
-    marginHorizontal: 15,
-    marginTop: 20,
   },
 
   whiteSquare2: {
@@ -350,6 +223,21 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 
+  plusinfos: {
+    alignItems: "center",
+    color: "rgba(57, 56, 131, 1)",
+    fontSize: 20,
+  },
+
+  scroll2: {
+    marginRight: 15,
+    marginLeft: 15,
+    alignContent: "center",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 100,
+  },
+
   whiteLine: {
     height: 2,
     marginTop: 20,
@@ -357,26 +245,11 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
 
-  buttonContainer: {
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 10,
-    width: 100,
-    borderRadius: 30,
-  },
-  buttonContainer2: {
-    height: 40,
-
-    marginTop: 15,
-
-    width: 200,
-    borderRadius: 30,
-  },
-  signInButton: {
-    backgroundColor: "rgba(120,116,172,1)",
-  },
-  loginText: {
-    color: "white",
+  header: {
+    fontSize: 18,
+    marginTop: 20,
+    fontWeight: "bold",
+    //fontFamily: "Roboto",
+    color: "rgba(57, 56, 131, 1)",
   },
 });

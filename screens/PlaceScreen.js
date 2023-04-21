@@ -1,3 +1,4 @@
+// Imports nécessaires au fonctionnement de la page
 import React, { useState, useEffect, useContext } from "react";
 import {
   Text,
@@ -19,8 +20,10 @@ import { addFavori, removeFavori } from "../api/favorisapi";
 import AuthContext from "../AuthContext";
 
 const PlaceScreen = ({ route, navigation }) => {
-  const { place } = route.params;
-  const { user } = useContext(AuthContext);
+  const { place } = route.params; // Récupération de l'objet place passé en paramètre de la route
+  const { user } = useContext(AuthContext); // Récupération de l'utilisateur qui est un contexte
+
+  // Initialisation des variables nécessaires dans la page
   const [lieu, setLieu] = useState([]);
   const [cultures, setCultures] = useState([]);
   const [ville, setVille] = useState([]);
@@ -28,8 +31,11 @@ const PlaceScreen = ({ route, navigation }) => {
   const [appreciations, setAppreciations] = useState([]);
 
   const [favorites, setFavorites] = useState([]);
+
+  // On cherche si le lieu est en favori ou non pour l'utilisateur connecté
   const isFavorite = favorites.some((f) => f.lieuId === place.id);
 
+  // Récupère à partir des fichiers du dossier api les informations sur le lieu, la ville, le pays, le point culture et les appreciations
   useEffect(() => {
     const getPlaceDetails = async () => {
       const placeDetails = await fetchLieu(place.id);
@@ -46,21 +52,24 @@ const PlaceScreen = ({ route, navigation }) => {
 
       const appreciationsDetails = await fetchAppreciationsParLieu(place.id);
       setAppreciations(appreciationsDetails);
-
+      // On vérifie qu'il y ait bien un user de connecté et on récupère les favoris de l'utilisateur
       if (user) {
         const newFavorites = await fetchFavorisParCompte(user.id);
         setFavorites(newFavorites);
       }
     };
+    // On exécute la fonction avec toutes ces informations
     getPlaceDetails();
   }, [place.id, user, favorites]);
 
+  // Fonction pour changer le coeur de favori et pour mettre ou enlever un favori dans l'API
   const toggleFavorite = async () => {
     const favori = favorites.find(
       (f) => f.compteId === user.id && f.lieuId === place.id
     );
     if (favori) {
       try {
+        // Si le lieu est déja en favori et que l'on appuie sur l'icone, on l'enlève des favoris et on met à jour la liste des favoris en filtrant
         await removeFavori(favori.id);
         setFavorites(
           favorites.filter(
@@ -72,6 +81,7 @@ const PlaceScreen = ({ route, navigation }) => {
       }
     } else {
       try {
+        // si on appuie sur le bouton pour ajouter en favori, on ajoute le favori et on met à jour la liste des favoris en ajoutant le lieu
         const newFavori = await addFavori(user, place);
         setFavorites([...favorites, newFavori]);
       } catch (error) {
@@ -80,31 +90,46 @@ const PlaceScreen = ({ route, navigation }) => {
     }
   };
 
+  // On initialise l'icone du coeur, soit plein si le lieu est en favori, soit vide si le lieu n'est pas en favori
   const heartIcon = isFavorite ? "heart" : "heart-outline";
 
   return (
+    // Affichage de la vue
     <ScrollView>
       <View style={styles.container}>
         <Image style={styles.photo} source={{ uri: lieu.photo }} />
         <View style={styles.informations}>
           <View>
-            <Text style={styles.header}>{lieu.nom ? lieu.nom : ""}</Text>
+            <Text style={styles.header}>
+              {
+                lieu.nom
+                  ? lieu.nom
+                  : "" /*Affiche le nom du lieu s'il existe, évite les erreur lorsque le useEffect n'est pas encore exécuté*/
+              }
+            </Text>
             <Text style={styles.subheader}>
-              {ville.nom ? ville.nom : ""}, {pays.nom ? pays.nom : ""}
+              {ville.nom ? ville.nom : ""},{" "}
+              {
+                pays.nom
+                  ? pays.nom
+                  : "" /*Idem pour le nom du pays et de la ville*/
+              }
             </Text>
           </View>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <TouchableOpacity
               style={[styles.buttonContainer, styles.signInButton]}
-              onPress={() => navigation.navigate("AddVisit", { place })}
+              onPress={
+                () =>
+                  navigation.navigate("AddVisit", {
+                    place,
+                  }) /*Si on appuie sur le bouton, on est redirigé sur la page AddVisit et on passe en paramètre de la route le lieu en question*/
+              }
             >
               <Text style={styles.loginText}>Ajouter une visite</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={toggleFavorite}
-              color={isFavorite ? "red" : "gray"}
-            >
+            <TouchableOpacity onPress={toggleFavorite}>
               <Ionicons name={heartIcon} size={24} style={styles.icon} />
             </TouchableOpacity>
           </View>
@@ -114,27 +139,38 @@ const PlaceScreen = ({ route, navigation }) => {
           <Text style={styles.description}>{lieu.description}</Text>
           <View style={styles.whiteLine} />
           <Text style={styles.headdescription}>Point culture</Text>
-          {cultures.map((culture) => (
-            <View>
-              <Text style={styles.title}>{culture.nom}</Text>
-
-              <Text style={styles.description}>{culture.description}</Text>
-            </View>
-          ))}
+          {cultures.length > 0 ? (
+            cultures.map((culture) => (
+              <View key={culture.id}>
+                <Text style={styles.title}>{culture.nom}</Text>
+                <Text style={styles.description}>{culture.description}</Text>
+              </View>
+            ))
+          ) : (
+            <Text style={styles.message}>
+              Il n'y a pas d'anecdotes pour ce lieu
+            </Text>
+          )}
 
           <View style={styles.whiteLine} />
           <Text style={styles.headdescription}>Appréciations</Text>
 
           <ScrollView horizontal>
-            {appreciations.map((appreciation) => (
-              <View style={styles.whiteSquare}>
-                <View style={styles.scroll}>
-                  <Text style={styles.text}>{user.mail}</Text>
-                  <Text style={styles.text}>{appreciation.date}</Text>
-                  <Text style={styles.text}>{appreciation.commentaire}</Text>
+            {cultures.length > 0 ? (
+              appreciations.map((appreciation) => (
+                <View style={styles.whiteSquare} key={appreciation.id}>
+                  <View style={styles.scroll}>
+                    <Text style={styles.text}>{user.mail}</Text>
+                    <Text style={styles.text}>{appreciation.date}</Text>
+                    <Text style={styles.text}>{appreciation.commentaire}</Text>
+                  </View>
                 </View>
-              </View>
-            ))}
+              ))
+            ) : (
+              <Text style={styles.message}>
+                Il n'y a pas d'appréciations pour ce lieu
+              </Text>
+            )}
           </ScrollView>
         </View>
       </View>
@@ -184,6 +220,9 @@ const styles = StyleSheet.create({
     color: "rgba(69, 82, 152, 1)",
   },
 
+  message: {
+    color: "grey",
+  },
   appreciation: {
     fontSize: 14,
     marginRight: 15,

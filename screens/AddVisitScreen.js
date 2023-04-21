@@ -12,20 +12,25 @@ import {
 } from "react-native";
 
 import DateTimePicker from "@react-native-community/datetimepicker";
-import Ionicons from "react-native-vector-icons/Ionicons";
 
 import { addVisite } from "../api/visiteapi";
-import { addAppreciation } from "../api/appreciationapi";
 import AuthContext from "../AuthContext";
 
 const AddVisitScreen = ({ route, navigation }) => {
+  // Récupération du lieu dans la route
   const { place } = route.params;
+
+  // Récupération du contexte lié au compte connecté
   const { user } = useContext(AuthContext);
+
+  // Initialisation du date picker permettant de sélectionner une date
   const [showDatePicker, setShowDatePicker] = useState(false);
 
+  // Initialisation de la date sélectionnée à la date d'aujourd'hui
   const [date, setDate] = useState(new Date());
 
-  const onDateChange = (event, selectedDate) => {
+  // Fonction permettant de mettre à jour la date
+  const onDateChange = (selectedDate) => {
     const currentDate = selectedDate || date;
     setDate(currentDate);
     setShowDatePicker(false); // Masque le date picker une fois la date sélectionnée
@@ -41,6 +46,7 @@ const AddVisitScreen = ({ route, navigation }) => {
           [
             {
               text: "Oui",
+              // Si la personne clique sur oui, on la redirige sur la page permettant d'ajouter une appréciation et on ajoute la visite
               onPress: async () => {
                 await addVisite(user, place, date);
                 navigation.navigate("AddAppreciation", { place });
@@ -48,9 +54,10 @@ const AddVisitScreen = ({ route, navigation }) => {
             },
             {
               text: "Non",
+              // Si la personne clique sur non, on la redirige sur la page du lieu
               onPress: async () => {
                 await addVisite(user, place, date);
-                navigation.navigate("Travels");
+                navigation.navigate("Place", { place });
               },
             },
           ]
@@ -108,49 +115,10 @@ const AddVisitScreen = ({ route, navigation }) => {
 export default AddVisitScreen;
 
 const styles = StyleSheet.create({
-  scroll: {
-    marginRight: 30,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  text: {
-    fontSize: 16,
-    marginBottom: 20,
-    //fontFamily: "ArialMT",
-    color: "rgba(69, 82, 152, 1)",
-  },
   container: {
     backgroundColor: "rgba( 239, 239, 250, 1)",
     alignItems: "center",
     height: 1000,
-  },
-
-  label: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  selectedDate: {
-    marginBottom: 10,
-  },
-
-  contentContainer: {
-    flex: 1,
-    marginVertical: 10,
-    alignItems: "center",
-  },
-  headerContainer: {
-    flex: 3,
-    flexDirection: "row",
-  },
-  titleText: {
-    fontWeight: "bold",
-    fontSize: 20,
-    flex: 1,
-    flexWrap: "wrap",
-    color: "rgba(57, 56, 131, 1)",
-    paddingRight: 5,
   },
 
   header: {
@@ -158,38 +126,9 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginBottom: 5,
     fontWeight: "bold",
-    //fontFamily: "Roboto",
     color: "rgba(57, 56, 131, 1)",
   },
-  descriptionContainer: {
-    flex: 7,
-  },
-  descriptionText: {
-    color: "rgba(69, 82, 152, 1)",
-  },
-  respoContainer: {
-    flex: 1,
-  },
-  respoText: {
-    textAlign: "right",
-    fontSize: 14,
-  },
 
-  buttonContainer: {
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 10,
-    width: 150,
-    borderRadius: 30,
-  },
-
-  signInButton: {
-    backgroundColor: "rgba(120,116,172,1)",
-  },
-  loginText: {
-    color: "white",
-  },
   whiteLine: {
     height: 2,
     marginTop: 20,
@@ -213,5 +152,34 @@ const styles = StyleSheet.create({
 
     marginHorizontal: 15,
     marginTop: 20,
+  },
+
+  contentContainer: {
+    flex: 1,
+    marginVertical: 10,
+    alignItems: "center",
+  },
+
+  text: {
+    fontSize: 16,
+    marginBottom: 20,
+    //fontFamily: "ArialMT",
+    color: "rgba(69, 82, 152, 1)",
+  },
+
+  buttonContainer: {
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+    width: 150,
+    borderRadius: 30,
+  },
+
+  signInButton: {
+    backgroundColor: "rgba(120,116,172,1)",
+  },
+  loginText: {
+    color: "white",
   },
 });

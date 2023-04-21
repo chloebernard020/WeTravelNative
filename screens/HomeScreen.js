@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { View, Text, Button } from "react-native";
+import { View } from "react-native";
 import AuthContext from "../AuthContext";
 import RootTabNavigator from "../navigation/RootTabNavigator";
 import AuthentificationStackNavigator from "../navigation/AuthentificationStackNavigator";
@@ -7,13 +7,8 @@ import AuthentificationStackNavigator from "../navigation/AuthentificationStackN
 const HomeScreen = () => {
   const { authenticated, setAuthenticated } = useContext(AuthContext);
 
-  const handleLogout = () => {
-    // appel à l'API de déconnexion
-    // si la déconnexion réussit, mettre authenticated à false
-    setAuthenticated(false);
-  };
   let ComponentToRender = null;
-
+  // On affiche une stack différente selon si l'utilisateur est authentifié ou non
   if (authenticated) {
     ComponentToRender = RootTabNavigator;
   } else {

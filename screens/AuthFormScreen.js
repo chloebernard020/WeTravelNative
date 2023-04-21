@@ -9,15 +9,19 @@ import {
   TextInput,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Input } from "../components/Input";
 import { authenticateUser } from "../api/compteapi";
 import AuthContext from "../AuthContext";
 
 export const AuthFormScreen = () => {
+  //Initiliasation des variables entrées par l'utilisateur
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  // setAuthenticated et setUser pour actualiser quand l'utilisateur se connecte
   const { setAuthenticated } = useContext(AuthContext);
   const { setUser } = useContext(AuthContext);
+
+  // Fonction permettant la connexion de l'utilisateur, on vérifie que l'utilisateur existe
   const handleLogin = async () => {
     try {
       let user = await authenticateUser(username, password);
@@ -40,10 +44,14 @@ export const AuthFormScreen = () => {
     }
   };
 
+  // Permet d'aller sur la page permettant de renouveler le mot de passe
   const resetPassword = () => {
     navigation.navigate("AskMail");
   };
+
   const navigation = useNavigation();
+
+  //Permet d'aller sur la page permettant l'inscription
   const signUp = () => {
     navigation.navigate("RegForm");
   };
@@ -85,19 +93,6 @@ export const AuthFormScreen = () => {
           onChangeText={setPassword}
         />
       </View>
-      {/*<Input
-        placeholder="Email"
-        imageUrl="https://img.icons8.com/external-dreamstale-lineal-dreamstale/32/null/external-at-mail-dreamstale-lineal-dreamstale.png"
-        hideCharacters={false}
-        onChangeText={setUsername}
-      />*/}
-
-      {/*<Input
-        placeholder="Mot de passe"
-        imageUrl="https://img.icons8.com/ios/50/null/password1--v1.png"
-        hideCharacters={true}
-        onChangeText={setPassword}
-    />*/}
       <TouchableOpacity
         style={[styles.buttonContainer, styles.signInButton]}
         onPress={handleLogin}
@@ -125,6 +120,24 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba( 224, 222, 238, 1)",
   },
 
+  formImage: {
+    width: 100,
+    height: 100,
+    marginBottom: 20,
+  },
+
+  header: {
+    fontSize: 28,
+    marginBottom: 20,
+    color: "rgba(57, 56, 131, 1)",
+  },
+
+  subheader: {
+    fontSize: 15,
+    marginBottom: 5,
+    color: "rgba(69, 82, 152, 1)",
+  },
+
   container2: {
     borderBottomColor: "#F5FCFF",
     backgroundColor: "white",
@@ -136,23 +149,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  inputText: {
-    height: 45,
-    marginLeft: 16,
-    borderBottomColor: "#FFFFFF",
-    flex: 1,
-  },
+
   inputIcon: {
     width: 30,
     height: 30,
     marginLeft: 15,
     justifyContent: "center",
   },
-  formImage: {
-    width: 100,
-    height: 100,
-    marginBottom: 20,
+
+  inputText: {
+    height: 45,
+    marginLeft: 16,
+    borderBottomColor: "#FFFFFF",
+    flex: 1,
   },
+
   buttonContainer: {
     height: 40,
     justifyContent: "center",
@@ -161,33 +172,22 @@ const styles = StyleSheet.create({
     width: 250,
     borderRadius: 30,
   },
+
   signInButton: {
     backgroundColor: "rgba(120,116,172,1)",
   },
+
   loginText: {
     color: "white",
   },
-  header: {
-    fontSize: 28,
-    marginBottom: 20,
-    //fontFamily: "ArialRoundedMTBold",
-    color: "rgba(57, 56, 131, 1)",
-  },
-  subheader: {
-    fontSize: 15,
-    marginBottom: 5,
-    //fontFamily: "ArialMT",
-    color: "rgba(69, 82, 152, 1)",
-  },
+
   notRegistered: {
     fontSize: 14,
-    //fontFamily: "ArialMT",
     color: "rgba(146, 128, 154, 1)",
     marginBottom: 4,
   },
   register: {
     fontSize: 20,
-    //fontFamily: "ArialRoundedMTBold",
     color: "rgba(186, 104, 163, 1)",
     fontWeight: "bold",
     marginBottom: 4,

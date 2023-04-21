@@ -1,16 +1,10 @@
 import React from "react";
-import {
-  Text,
-  View,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  Button,
-} from "react-native";
+import { Text, View, Image, StyleSheet, TouchableOpacity } from "react-native";
 // This component has two props: "name" and "age"
 export const Demande = ({ _key, compteDemandeur, onAccept, onDecline }) => {
   return (
-    <View key={_key}
+    <View
+      key={_key}
       style={{
         flexDirection: "row",
         alignItems: "center",
