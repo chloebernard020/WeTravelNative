@@ -208,8 +208,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginVertical: 10,
     marginLeft: 5,
-    //borderWidth: 1,
-    //borderColor: "#ccc",
   },
 
   research: {
@@ -221,15 +219,44 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     flexDirection: "row",
+
     margin: 10,
   },
+  scroll: {
+    marginRight: 30,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 
+  text: {
+    fontSize: 16,
+    marginBottom: 20,
+    color: "rgba(69, 82, 152, 1)",
+  },
+  container: {
+    backgroundColor: "rgba( 239, 239, 250, 1)",
+    alignItems: "center",
+    height: 1000,
+  },
+
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  selectedDate: {
+    marginBottom: 10,
+  },
+
+  contentContainer: {
+    flex: 1,
+    alignItems: "center",
+  },
   headerContainer: {
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
   },
-
   titleText: {
     fontWeight: "bold",
     fontSize: 20,
@@ -239,13 +266,34 @@ const styles = StyleSheet.create({
     paddingRight: 5,
   },
 
-  text: {
-    fontSize: 16,
-    marginBottom: 20,
-    //fontFamily: "ArialMT",
+  header: {
+    fontSize: 28,
+    marginBottom: 5,
+    fontWeight: "bold",
+    color: "rgba(57, 56, 131, 1)",
+  },
+  descriptionContainer: {
+    flex: 7,
+  },
+  descriptionText: {
     color: "rgba(69, 82, 152, 1)",
   },
+  respoContainer: {
+    flex: 1,
+  },
+  respoText: {
+    textAlign: "right",
+    fontSize: 14,
+  },
 
+  buttonContainer: {
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+    width: 40,
+    borderRadius: 30,
+  },
   buttonDeleteContainer: {
     height: 40,
     justifyContent: "center",
@@ -258,16 +306,32 @@ const styles = StyleSheet.create({
   signInButton: {
     backgroundColor: "rgba(120,116,172,1)",
   },
-
   loginText: {
     color: "white",
-    fontSize: 15,
+    fontSize: 22,
   },
-
   whiteLine: {
     height: 2,
     marginTop: 20,
     width: 380,
     backgroundColor: "white",
+  },
+
+  whiteSquare: {
+    height: 200,
+    width: 380,
+    backgroundColor: "rgba(270,270,270,1)",
+    borderRadius: 20,
+    marginBottom: 10,
+    shadowColor: "rgba(167,166,169,1)",
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.7,
+    shadowRadius: 10,
+    elevation: 10,
+    marginRight: 15,
+    marginLeft: 15,
+
+    marginHorizontal: 15,
+    marginTop: 20,
   },
 });

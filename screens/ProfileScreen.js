@@ -206,7 +206,7 @@ const ProfileScreen = ({ navigation }) => {
             ) : (
               demandes.map((demande, index) => (
                 <Demande
-                  _key={demande.id - index}
+                  key={demande.id - index}
                   demande={demande}
                   compteDemandeur={comptesDemandeurs[index]}
                   onAccept={() => handleAcceptFriend(demande)}
@@ -235,7 +235,7 @@ const ProfileScreen = ({ navigation }) => {
               <Text style={styles.aucunText}>Aucun ami pour le moment</Text>
             ) : (
               amis.map((_ami, index) => (
-                <ScrollFriends _key={_ami.id - index} ami={_ami} />
+                <ScrollFriends key={index} ami={_ami} />
               ))
             )}
           </ScrollView>
