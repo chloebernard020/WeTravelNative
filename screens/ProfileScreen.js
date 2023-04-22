@@ -97,6 +97,8 @@ const ProfileScreen = ({ navigation }) => {
     loadAmities();
   }, []);
 
+  //Renvoie une fonction de rappel
+  // on récupère toutes les informations relatives à un compte
   const fetchData = useCallback(async () => {
     const userData = await fetchCompte(user.id);
     setCompte(userData);
@@ -121,6 +123,7 @@ const ProfileScreen = ({ navigation }) => {
     setVisitedPlaces(newVisitedPlaces);
   }, []);
 
+  // UseEffect permet d'exécuter la fonction
   useEffect(() => {
     fetchData();
   }, [fetchData]);
@@ -129,6 +132,7 @@ const ProfileScreen = ({ navigation }) => {
     setAuthenticated(false);
   };
 
+  // Fonction permettant d'ajouter un ami a partir d'une demande, on enlève l'objet créé dans la table demande et on en ajoute un dans la table amis
   const handleAcceptFriend = async (demande) => {
     await addAmitie(user.id, demande.compteDemandeurId);
     await removeDemande(demande.id);
@@ -138,6 +142,7 @@ const ProfileScreen = ({ navigation }) => {
     await loadAmities();
   };
 
+  // Fonction permettant de décliner une demande, on enlève l'objet créé dans l'API des demandes
   const handleDeclineFriend = async (demande) => {
     await removeDemande(demande.id);
     setDemandes((prevDemandes) =>
@@ -146,6 +151,7 @@ const ProfileScreen = ({ navigation }) => {
     await loadAmities();
   };
 
+  // Gestion de la fenêtre de dialogue pour la suppression de l'appréciation
   const [showBox, setShowBox] = useState(true);
   const showConfirmDialog = (id) => {
     return Alert.alert(
@@ -157,6 +163,7 @@ const ProfileScreen = ({ navigation }) => {
           text: "Oui",
           onPress: () => {
             handleDeleteAppreciation(id);
+            // Suppression de l'appréciation
           },
         },
         // Le bouton Non
@@ -167,6 +174,8 @@ const ProfileScreen = ({ navigation }) => {
       ]
     );
   };
+
+  // Fonction permettant de supprimer une appréciation
   const handleDeleteAppreciation = async (id) => {
     setShowBox(false);
     await removeAppreciation(id);
@@ -199,21 +208,25 @@ const ProfileScreen = ({ navigation }) => {
         <View style={{ backgroundColor: "rgba( 224, 222, 238, 1)" }}>
           <Text style={styles.text}>Demandes d'ami</Text>
           <View>
-            {demandes.length === 0 ? (
-              <Text style={styles.aucunText}>
-                Aucune demande d'ami pour le moment
-              </Text>
-            ) : (
-              demandes.map((demande, index) => (
-                <Demande
-                  key={demande.id - index}
-                  demande={demande}
-                  compteDemandeur={comptesDemandeurs[index]}
-                  onAccept={() => handleAcceptFriend(demande)}
-                  onDecline={() => handleDeclineFriend(demande)}
-                />
-              ))
-            )}
+            {
+              /*S'il n'y a pas de demande on affiche un message*/
+              demandes.length === 0 ? (
+                <Text style={styles.aucunText}>
+                  Aucune demande d'ami pour le moment
+                </Text>
+              ) : (
+                // Sinon on les affiche avec les boutons accepter et refuser
+                demandes.map((demande, index) => (
+                  <Demande
+                    key={demande.id - index}
+                    demande={demande}
+                    compteDemandeur={comptesDemandeurs[index]}
+                    onAccept={() => handleAcceptFriend(demande)}
+                    onDecline={() => handleDeclineFriend(demande)}
+                  />
+                ))
+              )
+            }
           </View>
           <View
             style={{
@@ -223,6 +236,7 @@ const ProfileScreen = ({ navigation }) => {
             }}
           >
             <Text style={styles.text}>Amis</Text>
+            {/*Bouton permettant de naviguer dans la page des amis (qui affiche tous les comptes et qui permet d'ajouter ou de supprimer un ami)*/}
             <ButtonAddFriends
               navigation={navigation}
               amis={amis}
@@ -231,13 +245,19 @@ const ProfileScreen = ({ navigation }) => {
           </View>
 
           <ScrollView horizontal>
-            {amis.length === 0 ? (
-              <Text style={styles.aucunText}>Aucun ami pour le moment</Text>
-            ) : (
-              amis.map((_ami, index) => (
-                <ScrollFriends key={index} ami={_ami} />
-              ))
-            )}
+            {
+              /*S'il n'y a pas d'ami on affiche un message*/
+              amis.length === 0 ? (
+                <Text style={styles.aucunText}>Aucun ami pour le moment</Text>
+              ) : (
+                amis.map(
+                  (
+                    _ami,
+                    index // Sinon on affiche les composants associés aux amis
+                  ) => <ScrollFriends key={index} ami={_ami} />
+                )
+              )
+            }
           </ScrollView>
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
@@ -253,37 +273,46 @@ const ProfileScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
           <ScrollView horizontal>
-            {visitedPlaces.length === 0 ? (
-              <Text style={styles.aucunText}>Aucun lieu visité</Text>
-            ) : (
-              visitedPlaces.flatMap((place) => (
-                <View key={place.id}>
-                  <View style={styles.scroll}>
-                    <Image style={styles.photo} source={{ uri: place.photo }} />
+            {
+              /* Idem pour les lieux visités*/
+              visitedPlaces.length === 0 ? (
+                <Text style={styles.aucunText}>Aucun lieu visité</Text>
+              ) : (
+                visitedPlaces.flatMap((place) => (
+                  <View key={place.id}>
+                    <View style={styles.scroll}>
+                      <Image
+                        style={styles.photo}
+                        source={{ uri: place.photo }}
+                      />
+                    </View>
                   </View>
-                </View>
-              ))
-            )}
+                ))
+              )
+            }
           </ScrollView>
           <Text style={styles.text}>Vos appréciations</Text>
           <ScrollView horizontal>
-            {appreciations.length === 0 ? (
-              <Text>Aucune appréciation pour le moment</Text>
-            ) : (
-              appreciations.map((appreciation) => (
-                <View key={appreciation.id} style={styles.whiteSquare}>
-                  <Text>{appreciation.date}</Text>
+            {
+              /* Idem pour les appréciations*/
+              appreciations.length === 0 ? (
+                <Text>Aucune appréciation pour le moment</Text>
+              ) : (
+                appreciations.map((appreciation) => (
+                  <View key={appreciation.id} style={styles.whiteSquare}>
+                    <Text>{appreciation.date}</Text>
 
-                  <Text>{appreciation.commentaire}</Text>
-                  <TouchableOpacity
-                    style={styles.deleteAppreciationButton}
-                    onPress={() => showConfirmDialog(appreciation.id)}
-                  >
-                    <Text style={styles.deleteAppreciationText}>X</Text>
-                  </TouchableOpacity>
-                </View>
-              ))
-            )}
+                    <Text>{appreciation.commentaire}</Text>
+                    <TouchableOpacity
+                      style={styles.deleteAppreciationButton}
+                      onPress={() => showConfirmDialog(appreciation.id)}
+                    >
+                      <Text style={styles.deleteAppreciationText}>X</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))
+              )
+            }
           </ScrollView>
           <TouchableOpacity
             style={[styles.buttonContainer2, styles.editButton]}
