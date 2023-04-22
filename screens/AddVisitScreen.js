@@ -27,10 +27,10 @@ const AddVisitScreen = ({ route, navigation }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   // Initialisation de la date sélectionnée à la date d'aujourd'hui
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(new Date("2022-01-01"));
 
   // Fonction permettant de mettre à jour la date
-  const onDateChange = (selectedDate) => {
+  const onDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setDate(currentDate);
     setShowDatePicker(false); // Masque le date picker une fois la date sélectionnée
@@ -89,7 +89,7 @@ const AddVisitScreen = ({ route, navigation }) => {
             <Text style={styles.loginText}>Sélectionner une date</Text>
           </TouchableOpacity>
           <Text style={styles.text}>
-            Date sélectionnée : {date.toLocaleDateString()}
+            Date sélectionnée : {date ? date.toLocaleDateString() : ""}
           </Text>
           {showDatePicker && (
             <DateTimePicker
