@@ -23,7 +23,7 @@ export const AskMailScreen = ({ navigation }) => {
     const compte = comptes.find((compte) => compte.mail === mail);
     console.log(compte);
     setCompte(compte);
-  }, []);
+  }, [compte]);
 
   return (
     <View style={styles.container}>
